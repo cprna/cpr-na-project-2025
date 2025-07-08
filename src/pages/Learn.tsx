@@ -1,226 +1,211 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Play, CheckCircle, Video, ArrowRight, Clock, Users } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Heart, Phone, AlertTriangle, Clock, Zap, CheckCircle, ArrowRight, BookOpen, Target, Activity } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
 const Learn = () => {
-  const [completedVideos, setCompletedVideos] = useState<number[]>([]);
-  const [currentVideo, setCurrentVideo] = useState<number | null>(null);
-
-  const videos = [
-    {
-      id: 1,
-      title: "บทนำ: ความสำคัญของการช่วยฟื้นคืนชีพ",
-      duration: "5:30",
-      description: "ทำความเข้าใจเกี่ยวกับความสำคัญของ CPR และสถานการณ์ที่ต้องใช้",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" // ตัวอย่าง URL
-    },
-    {
-      id: 2,
-      title: "การตรวจสอบการตอบสนองและการหายใจ",
-      duration: "7:45",
-      description: "วิธีการตรวจสอบความรู้สึกตัวและการหายใจของผู้ป่วย",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 3,
-      title: "เทคนิคการกดหน้าอกที่ถูกต้อง",
-      duration: "10:20",
-      description: "ท่าทาง จังหวะ และความลึกในการกดหน้าอกที่มีประสิทธิภาพ",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 4,
-      title: "การเป่าปากให้ลมหายใจ",
-      duration: "6:15",
-      description: "วิธีการเป่าปากให้ลมหายใจอย่างถูกต้องและปลอดภัย",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 5,
-      title: "การใช้เครื่อง AED",
-      duration: "12:30",
-      description: "ขั้นตอนการใช้เครื่อง AED ตั้งแต่เปิดเครื่องจนถึงการช็อก",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 6,
-      title: "การประสานงานระหว่าง CPR และ AED",
-      duration: "8:45",
-      description: "การทำงานร่วมกันระหว่าง CPR และการใช้เครื่อง AED",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    }
-  ];
-
-  const markVideoComplete = (videoId: number) => {
-    if (!completedVideos.includes(videoId)) {
-      setCompletedVideos([...completedVideos, videoId]);
-    }
-  };
-
-  const progressPercentage = (completedVideos.length / videos.length) * 100;
-
   return (
     <>
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-background to-muted">
-        {/* Hero Section */}
-        <div className="bg-gradient-hero text-white py-12">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-4xl font-bold mb-4">
-                เรียนรู้การช่วยฟื้นคืนชีพและการใช้ AED
-              </h1>
-              <p className="text-xl text-white/90 mb-6">
-                เรียนรู้ทักษะที่จำเป็นในการช่วยชีวิตผู้อื่นผ่านวิดีโอการสอนที่ครบถ้วน
-              </p>
-              <div className="flex items-center justify-center space-x-6 text-white/80">
-                <div className="flex items-center space-x-2">
-                  <Video className="w-5 h-5" />
-                  <span>{videos.length} วิดีโอ</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-5 h-5" />
-                  <span>รวม 50+ นาที</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Users className="w-5 h-5" />
-                  <span>สำหรับประชาชนทั่วไป</span>
-                </div>
-              </div>
+        <div className="bg-gradient-medical text-white py-16">
+          <div className="container mx-auto px-4 text-center">
+            <Heart className="w-16 h-16 mx-auto mb-6" />
+            <h1 className="text-4xl font-bold mb-4">การช่วยฟื้นคืนชีพขั้นพื้นฐาน</h1>
+            <p className="text-xl mb-6 opacity-90">เรียนรู้ทักษะที่สำคัญที่สุดในการช่วยชีวิต</p>
+            <div className="flex items-center justify-center gap-4 text-lg">
+              <Phone className="w-6 h-6" />
+              <span>ฉุกเฉิน: โทร 1669 (โทรฟรีแต่อย่าโทรเล่น)</span>
             </div>
           </div>
         </div>
 
         <div className="container mx-auto px-4 py-8">
-          {/* Progress Section */}
-          <div className="max-w-4xl mx-auto mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Video className="w-5 h-5 text-primary" />
-                  <span>ความคืบหน้าการเรียนรู้</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>ดูวิดีโอแล้ว {completedVideos.length} จาก {videos.length} วิดีโอ</span>
-                    <span>{progressPercentage.toFixed(0)}%</span>
-                  </div>
-                  <Progress value={progressPercentage} className="h-3" />
-                </div>
-                {progressPercentage === 100 && (
-                  <div className="mt-4 p-4 bg-success/10 border border-success/20 rounded-lg">
-                    <p className="text-success font-semibold">🎉 ยินดีด้วย! คุณดูวิดีโอครบทุกตอนแล้ว</p>
-                    <Button 
-                      className="mt-2 bg-gradient-medical text-white"
-                      onClick={() => window.location.href = '/post-test'}
-                    >
-                      ทำแบบทดสอบหลังเรียน <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          <Tabs defaultValue="basics" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="basics">ความรู้พื้นฐาน</TabsTrigger>
+              <TabsTrigger value="drcab">ขั้นตอน D-R-C-A-B</TabsTrigger>
+              <TabsTrigger value="aed">การใช้ AED</TabsTrigger>
+              <TabsTrigger value="equipment">อุปกรณ์</TabsTrigger>
+            </TabsList>
 
-          {/* Video Content */}
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Video Player */}
-              <div className="lg:col-span-2">
-                {currentVideo ? (
-                  <Card className="shadow-lg">
-                    <CardContent className="p-6">
-                      <div className="aspect-video bg-black rounded-lg mb-4 overflow-hidden">
-                        <iframe
-                          src={videos.find(v => v.id === currentVideo)?.videoUrl}
-                          className="w-full h-full"
-                          allowFullScreen
-                          title="Learning Video"
-                        />
+            <TabsContent value="basics" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="w-6 h-6 text-primary" />
+                    การช่วยฟื้นคืนชีพ (CPR) คืออะไร?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-muted-foreground">
+                    การช่วยฟื้นคืนชีพ (Cardio-Pulmonary Resuscitation: CPR) เป็นการปฏิบัติเพื่อช่วยชีวิตผู้ที่หัวใจหยุดเต้นและหยุดหายใจกะทันหัน
+                  </p>
+                  <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
+                    <h4 className="font-semibold text-primary mb-2">จุดประสงค์หลัก:</h4>
+                    <ul className="space-y-2 text-muted-foreground">
+                      <li>• ให้มีการหายใจและการไหลเวียนโลหิตกลับคืนสู่สภาพเดิม</li>
+                      <li>• ป้องกันเนื้อเยื่อได้รับอันตรายจากการขาดออกซิเจนอย่างถาวร</li>
+                      <li>• คงไว้ซึ่งการไหลเวียนโลหิต</li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="w-6 h-6 text-warning" />
+                    ช่วงเวลาทอง (Golden Period)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="bg-warning/10 p-4 rounded-lg border border-warning/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <AlertTriangle className="w-5 h-5 text-warning" />
+                        <span className="font-semibold">4 นาทีแรก</span>
                       </div>
-                      <h2 className="text-xl font-bold mb-2">
-                        {videos.find(v => v.id === currentVideo)?.title}
-                      </h2>
-                      <p className="text-muted-foreground mb-4">
-                        {videos.find(v => v.id === currentVideo)?.description}
-                      </p>
-                      <Button
-                        onClick={() => markVideoComplete(currentVideo)}
-                        disabled={completedVideos.includes(currentVideo)}
-                        className="bg-gradient-medical text-white"
-                      >
-                        {completedVideos.includes(currentVideo) ? (
-                          <>
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            ดูแล้ว
-                          </>
-                        ) : (
-                          'ทำเครื่องหมายว่าดูแล้ว'
-                        )}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <Card className="shadow-lg">
-                    <CardContent className="p-12 text-center">
-                      <Video className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                      <h2 className="text-xl font-bold mb-2">เลือกวิดีโอที่ต้องการดู</h2>
-                      <p className="text-muted-foreground">
-                        เริ่มต้นการเรียนรู้โดยเลือกวิดีโอจากรายการด้านข้าง
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-
-              {/* Video Playlist */}
-              <div>
-                <Card className="shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="text-lg">รายการวิดีโอ</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="space-y-2">
-                      {videos.map((video) => (
-                        <div
-                          key={video.id}
-                          className={`p-4 border-b last:border-b-0 cursor-pointer hover:bg-muted/50 transition-colors ${
-                            currentVideo === video.id ? 'bg-muted' : ''
-                          }`}
-                          onClick={() => setCurrentVideo(video.id)}
-                        >
-                          <div className="flex items-start space-x-3">
-                            <div className="flex-shrink-0 mt-1">
-                              {completedVideos.includes(video.id) ? (
-                                <CheckCircle className="w-5 h-5 text-success" />
-                              ) : (
-                                <Play className="w-5 h-5 text-muted-foreground" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-sm leading-tight mb-1">
-                                {video.title}
-                              </h3>
-                              <p className="text-xs text-muted-foreground mb-1">
-                                {video.description}
-                              </p>
-                              <span className="text-xs text-muted-foreground">
-                                {video.duration}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                      <p className="text-sm text-muted-foreground">ตายชั่วคราว - ยังสามารถฟื้นคืนได้</p>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                    <div className="bg-destructive/10 p-4 rounded-lg border border-destructive/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <AlertTriangle className="w-5 h-5 text-destructive" />
+                        <span className="font-semibold">10 นาที</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">สมองตายถาวร</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="drcab" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="w-6 h-6 text-primary" />
+                    ขั้นตอน D-R-C-A-B
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="border-l-4 border-destructive pl-4">
+                      <h3 className="text-xl font-bold mb-2">D - Danger (ตรวจสอบอันตราย)</h3>
+                      <p className="text-muted-foreground">ตรวจสอบให้แน่ใจว่าสถานที่ปลอดภัยสำหรับผู้ช่วยเหลือและผู้ป่วย</p>
+                    </div>
+                    <div className="border-l-4 border-warning pl-4">
+                      <h3 className="text-xl font-bold mb-2">R - Response (ตรวจสอบการตอบสนอง)</h3>
+                      <p className="text-muted-foreground">เขย่าไหล่และเรียกเสียงดัง "คุณๆๆ..." หากไม่รู้สึกตัวให้โทร 1669</p>
+                    </div>
+                    <div className="border-l-4 border-primary pl-4">
+                      <h3 className="text-xl font-bold mb-2">C - Circulation (ระบบไหลเวียน)</h3>
+                      <p className="text-muted-foreground">ตรวจชีพจรที่คอ 5-10 วินาที หากไม่มีชีพจรให้กดหน้าอกทันที</p>
+                      <div className="mt-2 text-sm">
+                        <p>• ความลึก: 5-6 ซม. • อัตรา: 100-120 ครั้ง/นาที • อัตราส่วน: 30:2</p>
+                      </div>
+                    </div>
+                    <div className="border-l-4 border-blue-500 pl-4">
+                      <h3 className="text-xl font-bold mb-2">A - Airway (ทางเดินหายใจ)</h3>
+                      <p className="text-muted-foreground">Head tilt chin lift (การกดหน้าผากและเชยคาง)</p>
+                    </div>
+                    <div className="border-l-4 border-green-500 pl-4">
+                      <h3 className="text-xl font-bold mb-2">B - Breathing (การหายใจ)</h3>
+                      <p className="text-muted-foreground">ช่วยหายใจ 2 ครั้ง โดยเป่าลม 1 วินาที/ครั้ง</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="aed" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="w-6 h-6 text-primary" />
+                    ขั้นตอนการใช้ AED: เปิด - แปะ - ปุ่ม - ปั๊ม
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="p-4 border rounded">
+                      <h4 className="font-semibold mb-2">1. เปิด</h4>
+                      <p className="text-sm text-muted-foreground">เปิดเครื่อง AED และฟังคำแนะนำ</p>
+                    </div>
+                    <div className="p-4 border rounded">
+                      <h4 className="font-semibold mb-2">2. แปะ</h4>
+                      <p className="text-sm text-muted-foreground">แปะแผ่น electrode หยุด CPR ชั่วคราว</p>
+                    </div>
+                    <div className="p-4 border rounded">
+                      <h4 className="font-semibold mb-2">3. ปุ่ม</h4>
+                      <p className="text-sm text-muted-foreground">กดปุ่ม Shock เมื่อเครื่องสั่ง บอก "ทุกคนถอย"</p>
+                    </div>
+                    <div className="p-4 border rounded">
+                      <h4 className="font-semibold mb-2">4. ปั๊ม</h4>
+                      <p className="text-sm text-muted-foreground">ปั๊มหัวใจต่อทันทีหลัง Shock</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="equipment" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>อุปกรณ์ที่จำเป็น</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">ทางเดินหายใจ:</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• หน้ากาก</li>
+                        <li>• Nasal/Oral airway</li>
+                        <li>• Endotracheal tube</li>
+                        <li>• Laryngoscope</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">ออกซิเจน:</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• ถังออกซิเจน</li>
+                        <li>• สายออกซิเจน</li>
+                        <li>• Ambu Bag</li>
+                        <li>• Mask</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">อื่นๆ:</h4>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li>• กระดานรองหลัง</li>
+                        <li>• เครื่อง AED</li>
+                        <li>• รถ Emergency</li>
+                        <li>• อุปกรณ์ดูดเสมหะ</li>
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.href = '/pretest'}
+              className="flex items-center gap-2"
+            >
+              <CheckCircle className="w-4 h-4" />
+              ทดสอบก่อนเรียน
+            </Button>
+            <Button 
+              onClick={() => window.location.href = '/posttest'}
+              className="bg-gradient-medical text-white flex items-center gap-2"
+            >
+              ทดสอบหลังเรียน
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>
