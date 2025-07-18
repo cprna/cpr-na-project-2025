@@ -26,59 +26,47 @@ const Admin = () => {
   const [userData] = useState([
     {
       id: 1,
-      name: "นางสาวสุดา ใจดี",
-      email: "suda@example.com",
-      preTestScore: 6,
-      postTestScore: 9,
-      completedVideos: 6,
-      totalVideos: 6,
-      completedDate: "2024-01-15",
-      timeSpent: "45 นาที"
+      name:
+      preTestScore: 
+      postTestScore:
+      completedVideos: 
+      totalVideos: 
+      completedDate: 
+      timeSpent:
     },
     {
       id: 2,
-      name: "นายสมชาย รักเรียน",
-      email: "somchai@example.com",
-      preTestScore: 4,
-      postTestScore: 8,
-      completedVideos: 6,
-      totalVideos: 6,
-      completedDate: "2024-01-14",
-      timeSpent: "52 นาที"
+      name: 
+      email: 
+      preTestScore: 
+      postTestScore: 
+      completedVideos: 
+      totalVideos: 
+      completedDate:
+      timeSpent: 
     },
     {
-      id: 3,
-      name: "นางสาววิภา ศึกษาดี",
-      email: "wipha@example.com",
-      preTestScore: 7,
-      postTestScore: 10,
-      completedVideos: 5,
-      totalVideos: 6,
-      completedDate: "-",
-      timeSpent: "38 นาที"
+      id: 
+      name: 
+      email: 
+      preTestScore: 
+      postTestScore: 
+      completedVideos: 
+      totalVideos: 
+      completedDate: 
+      timeSpent: 
     },
     {
-      id: 4,
-      name: "นายประเสริฐ เก่งมาก",
-      email: "prasert@example.com",
-      preTestScore: 5,
-      postTestScore: 8,
-      completedVideos: 6,
-      totalVideos: 6,
-      completedDate: "2024-01-13",
-      timeSpent: "47 นาที"
+      id: 
+      name: 
+      email: 
+      preTestScore: 
+      postTestScore:
+      completedVideos: 
+      totalVideos: 
+      completedDate:
+      timeSpent: 
     },
-    {
-      id: 5,
-      name: "นางสาวมาลี สุขใจ",
-      email: "malee@example.com",
-      preTestScore: 3,
-      postTestScore: 7,
-      completedVideos: 4,
-      totalVideos: 6,
-      completedDate: "-",
-      timeSpent: "25 นาที"
-    }
   ]);
 
   const getStatusBadge = (user: any) => {
