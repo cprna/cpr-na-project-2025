@@ -14,7 +14,160 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      exam_results: {
+        Row: {
+          answers: Json | null
+          completed_at: string
+          exam_type: string
+          id: string
+          score: number
+          simple_user_id: string | null
+          total_questions: number
+          user_id: string | null
+        }
+        Insert: {
+          answers?: Json | null
+          completed_at?: string
+          exam_type: string
+          id?: string
+          score: number
+          simple_user_id?: string | null
+          total_questions?: number
+          user_id?: string | null
+        }
+        Update: {
+          answers?: Json | null
+          completed_at?: string
+          exam_type?: string
+          id?: string
+          score?: number
+          simple_user_id?: string | null
+          total_questions?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_results_simple_user_id_fkey"
+            columns: ["simple_user_id"]
+            isOneToOne: false
+            referencedRelation: "simple_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          last_accessed: string | null
+          simple_user_id: string | null
+          time_spent_minutes: number
+          total_videos: number
+          updated_at: string
+          user_id: string | null
+          videos_completed: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_accessed?: string | null
+          simple_user_id?: string | null
+          time_spent_minutes?: number
+          total_videos?: number
+          updated_at?: string
+          user_id?: string | null
+          videos_completed?: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_accessed?: string | null
+          simple_user_id?: string | null
+          time_spent_minutes?: number
+          total_videos?: number
+          updated_at?: string
+          user_id?: string | null
+          videos_completed?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_progress_simple_user_id_fkey"
+            columns: ["simple_user_id"]
+            isOneToOne: false
+            referencedRelation: "simple_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          created_at: string
+          full_name: string | null
+          gender: string | null
+          id: string
+          login_date: string | null
+          occupation: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          login_date?: string | null
+          occupation?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: number | null
+          created_at?: string
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          login_date?: string | null
+          occupation?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      simple_users: {
+        Row: {
+          age: number
+          created_at: string
+          full_name: string
+          gender: string
+          id: string
+          last_login: string | null
+          occupation: string
+        }
+        Insert: {
+          age: number
+          created_at?: string
+          full_name: string
+          gender: string
+          id?: string
+          last_login?: string | null
+          occupation: string
+        }
+        Update: {
+          age?: number
+          created_at?: string
+          full_name?: string
+          gender?: string
+          id?: string
+          last_login?: string | null
+          occupation?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

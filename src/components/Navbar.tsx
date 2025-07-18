@@ -1,10 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Heart, Home, BookOpen, Video, FileText, BarChart3, Settings } from "lucide-react";
+import { Heart, Home, BookOpen, FileText, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useSimpleAuth } from "@/hooks/useSimpleAuth";
+import SimpleLogin from "./SimpleLogin";
 
 const Navbar = () => {
   const location = useLocation();
+  const { user, login, logout, isAuthenticated } = useSimpleAuth();
+  const [showLogin, setShowLogin] = useState(false);
 
   const navItems = [
     { href: "/", label: "หน้าแรก", icon: Home },
@@ -47,15 +52,40 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm">
-              เข้าสู่ระบบ
-            </Button>
-            <Button size="sm" className="bg-gradient-emergency text-white">
-              สมัครสมาชิก
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <span className="text-sm font-medium text-foreground">
+                  สวัสดี, {user?.full_name}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={logout}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  ออกจากระบบ
+                </Button>
+              </>
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowLogin(true)}
+              >
+                เข้าสู่ระบบ
+              </Button>
+            )}
           </div>
         </div>
       </div>
+      
+      {showLogin && (
+        <SimpleLogin 
+          onLogin={login}
+          onClose={() => setShowLogin(false)}
+        />
+      )}
     </nav>
   );
 };
