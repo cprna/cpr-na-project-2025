@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -17,11 +17,40 @@ import {
   Award,
   Download,
   Calendar,
-  Clock
+  Clock,
+  Lock
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { useSimpleAuth } from "@/hooks/useSimpleAuth";
 
 const Admin = () => {
+  const { user, isAuthenticated } = useSimpleAuth();
+  
+  // ตรวจสอบสิทธิ์ admin - เฉพาะคุณเท่านั้นที่เข้าได้
+  const isAdmin = isAuthenticated && user?.full_name === "ผู้ดูแลระบบ"; // เปลี่ยนชื่อตามที่คุณต้องการ
+  
+  // หากไม่ใช่ admin ให้แสดงหน้าไม่อนุญาต
+  if (!isAdmin) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-8 text-center">
+              <Lock className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+              <h2 className="text-2xl font-bold mb-2">ไม่อนุญาตให้เข้าถึง</h2>
+              <p className="text-muted-foreground mb-4">
+                คุณไม่มีสิทธิ์เข้าถึงหน้านี้
+              </p>
+              <Button onClick={() => window.history.back()} variant="outline">
+                กลับไปหน้าก่อนหน้า
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </>
+    );
+  }
   // Sample data - in real app this would come from database
   const [userData] = useState([
     {

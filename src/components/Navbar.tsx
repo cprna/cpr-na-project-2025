@@ -15,7 +15,6 @@ const Navbar = () => {
     { href: "/", label: "หน้าแรก", icon: Home },
     { href: "/course", label: "หลักสูตร", icon: BookOpen },
     { href: "/articles", label: "บทความ", icon: FileText },
-    { href: "/admin", label: "แอดมิน", icon: Settings },
   ];
 
   return (
