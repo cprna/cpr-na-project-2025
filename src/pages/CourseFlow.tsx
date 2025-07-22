@@ -13,38 +13,11 @@ import {
   Clock, 
   Users,
   Trophy,
-  BookOpen,
-  Lock
+  BookOpen
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { useSimpleAuth } from "@/hooks/useSimpleAuth";
 
 const CourseFlow = () => {
-  const { user, isAuthenticated } = useSimpleAuth();
-  
-  // ตรวจสอบการเข้าสู่ระบบ
-  if (!isAuthenticated) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
-          <Card className="w-full max-w-md">
-            <CardContent className="p-8 text-center">
-              <Lock className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-2xl font-bold mb-2">เข้าสู่ระบบก่อนใช้งาน</h2>
-              <p className="text-muted-foreground mb-4">
-                กรุณาเข้าสู่ระบบเพื่อเข้าถึงหลักสูตรการเรียนรู้
-              </p>
-              <Button onClick={() => window.history.back()} variant="outline">
-                กลับไปหน้าแรก
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </>
-    );
-  }
-
   const [currentStep, setCurrentStep] = useState<'preTest' | 'learn' | 'postTest' | 'complete'>('preTest');
   const [preTestAnswers, setPreTestAnswers] = useState<Record<number, string>>({});
   const [postTestAnswers, setPostTestAnswers] = useState<Record<number, string>>({});
