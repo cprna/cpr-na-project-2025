@@ -23,7 +23,10 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-emergency rounded-lg flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
+              <img
+                src="/logo.svg"
+                className="h-10 w-10 object-contain"
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-lg text-foreground">CPR-NA</span>
