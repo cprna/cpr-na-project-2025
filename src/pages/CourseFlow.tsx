@@ -244,7 +244,7 @@ const CourseFlow = () => {
     {
       id: 2,
       title: "การช่วยฟื้นคืนชีพขั้นพื้นฐาน(CPR) และการใช้เครื่องเออีดี(AED)",
-      duration: "6.25",
+      duration: "6:25",
       description: "วิธีการตรวจสอบความรู้สึกตัวและการหายใจของผู้ป่วย",
       videoUrl: "https://www.youtube.com/embed/hr6Ig4WUcZA?si=xnQVF00bAXQ5e1aq"
     }
