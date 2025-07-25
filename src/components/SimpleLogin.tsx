@@ -64,7 +64,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
 
     try {
       const { data, error } = await supabase
-        .from('profiless')
+        .from('profiles')
         .insert([{
           full_name: formData.full_name,
           age: parseInt(formData.age),
