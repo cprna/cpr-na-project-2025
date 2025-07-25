@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 
 interface Profile {
   id: string;
-  name: string;
+  full_name: string;
   age: number;
   gender: string; // 'ชาย', 'หญิง', 'อื่นๆ'
   occupation: string;
-  cpr_experience?: string[]; // เพิ่ม field นี้
-  login_date?: string;
+  cpr_experience: string[];
+  created_at?: string;
+  last_login?: string;
+  updated_at?: string;
 }
 
-export const useProfileAuth = () => {
+export const useSimpleAuth = () => {
   const [user, setUser] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -46,3 +48,6 @@ export const useProfileAuth = () => {
     isAuthenticated: !!user
   };
 };
+
+// Export alias สำหรับ backward compatibility
+export const useProfileAuth = useSimpleAuth;
