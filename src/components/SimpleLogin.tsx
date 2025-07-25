@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, User, Calendar, Users, Briefcase } from "lucide-react";
@@ -13,23 +14,47 @@ interface SimpleLoginProps {
   onClose: () => void;
 }
 
+const cprExperiences = [
+  "เคยเรียนในโรงเรียน / มหาวิทยาลัย",
+  "เคยอบรมจากหน่วยงานหรือหลักสูตร CPR",
+  "เคยดูวิดีโอหรือเรียนออนไลน์",
+  "เคยเห็นเหตุการณ์จริง",
+  "ไม่เคยเลย"
+];
+
 const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
   const [formData, setFormData] = useState({
     full_name: "",
     age: "",
     gender: "",
-    occupation: ""
+    occupation: "",
+    cpr_experience: [] as string[]
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  const handleExperienceChange = (experience: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      cpr_experience: checked
+        ? [...prev.cpr_experience, experience]
+        : prev.cpr_experience.filter(e => e !== experience)
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.full_name || !formData.age || !formData.gender || !formData.occupation) {
+    if (
+      !formData.full_name ||
+      !formData.age ||
+      !formData.gender ||
+      !formData.occupation ||
+      formData.cpr_experience.length === 0
+    ) {
       toast({
         title: "กรุณากรอกข้อมูลให้ครบถ้วน",
-        description: "โปรดใส่ชื่อ อายุ เพศ และอาชีพของคุณ",
+        description: "โปรดใส่ชื่อ อายุ เพศ อาชีพ และเลือกประสบการณ์ CPR ของคุณ",
         variant: "destructive"
       });
       return;
@@ -44,7 +69,8 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
           full_name: formData.full_name,
           age: parseInt(formData.age),
           gender: formData.gender,
-          occupation: formData.occupation
+          occupation: formData.occupation,
+          cpr_experience: formData.cpr_experience // save as array
         }])
         .select()
         .single();
@@ -146,6 +172,29 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
                 onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
                 required
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                ประสบการณ์เกี่ยวกับการทำ CPR
+              </Label>
+              <div className="space-y-2 ml-2">
+                {cprExperiences.map((exp) => (
+                  <div key={exp} className="flex items-center gap-2">
+                    <Checkbox
+                      id={exp}
+                      checked={formData.cpr_experience.includes(exp)}
+                      onCheckedChange={(checked: boolean) =>
+                        handleExperienceChange(exp, checked)
+                      }
+                    />
+                    <Label htmlFor={exp}>{exp}</Label>
+                  </div>
+                ))}
+              </div>
+              <div className="text-xs text-muted-foreground ml-2">
+                (สามารถเลือกได้มากกว่า 1 ข้อ)
+              </div>
             </div>
 
             <div className="flex gap-3 pt-4">
