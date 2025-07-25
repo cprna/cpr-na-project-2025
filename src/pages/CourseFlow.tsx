@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -17,6 +17,48 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
+// ===== YouTubePlayer component =====
+const YouTubePlayer = ({ youtubeId, onEnded }: { youtubeId: string, onEnded: () => void }) => {
+  const playerRef = useRef<HTMLDivElement>(null);
+  const ytPlayer = useRef<any>(null);
+
+  useEffect(() => {
+    // Load YouTube API if needed
+    if (!(window as any).YT) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(tag);
+    }
+
+    function createPlayer() {
+      ytPlayer.current = new (window as any).YT.Player(playerRef.current, {
+        height: "100%",
+        width: "100%",
+        videoId: youtubeId,
+        events: {
+          onStateChange: (event: any) => {
+            if (event.data === (window as any).YT.PlayerState.ENDED && onEnded) {
+              onEnded();
+            }
+          }
+        }
+      });
+    }
+
+    if ((window as any).YT && (window as any).YT.Player) {
+      createPlayer();
+    } else {
+      (window as any).onYouTubeIframeAPIReady = createPlayer;
+    }
+
+    return () => {
+      if (ytPlayer.current && ytPlayer.current.destroy) ytPlayer.current.destroy();
+    };
+  }, [youtubeId, onEnded]);
+
+  return <div ref={playerRef} className="aspect-video bg-black rounded-lg mb-4 overflow-hidden" />;
+};
+
 const CourseFlow = () => {
   const [currentStep, setCurrentStep] = useState<'preTest' | 'learn' | 'postTest' | 'complete'>('preTest');
   const [preTestAnswers, setPreTestAnswers] = useState<Record<number, string>>({});
@@ -24,6 +66,19 @@ const CourseFlow = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [completedVideos, setCompletedVideos] = useState<number[]>([]);
   const [currentVideo, setCurrentVideo] = useState<number | null>(1);
+
+  // สำหรับเช็ค video จบจริง
+  const [videoEnded, setVideoEnded] = useState(false);
+
+  // helper สำหรับแยก youtubeId จาก embed url
+  const getYouTubeId = (url: string) => {
+    const m = url.match(/\/embed\/([^\?&]+)/);
+    return m ? m[1] : "";
+  };
+
+  useEffect(() => {
+    setVideoEnded(false); // reset เมื่อเปลี่ยนวิดีโอ
+  }, [currentVideo]);
 
   const questions = [
     {
@@ -453,14 +508,11 @@ const CourseFlow = () => {
                   {currentVideo ? (
                     <Card className="shadow-lg">
                       <CardContent className="p-6">
-                        <div className="aspect-video bg-black rounded-lg mb-4 overflow-hidden">
-                          <iframe
-                            src={videos.find(v => v.id === currentVideo)?.videoUrl}
-                            className="w-full h-full"
-                            allowFullScreen
-                            title="Learning Video"
-                          />
-                        </div>
+                        {/* เปลี่ยนจาก iframe เป็น YouTubePlayer */}
+                        <YouTubePlayer
+                          youtubeId={getYouTubeId(videos.find(v => v.id === currentVideo)?.videoUrl ?? "")}
+                          onEnded={() => setVideoEnded(true)}
+                        />
                         <h3 className="text-xl font-bold mb-2">
                           {videos.find(v => v.id === currentVideo)?.title}
                         </h3>
@@ -469,7 +521,7 @@ const CourseFlow = () => {
                         </p>
                         <Button
                           onClick={() => markVideoComplete(currentVideo)}
-                          disabled={completedVideos.includes(currentVideo)}
+                          disabled={completedVideos.includes(currentVideo) || !videoEnded}
                           className="bg-gradient-medical text-white"
                         >
                           {completedVideos.includes(currentVideo) ? (
@@ -478,7 +530,7 @@ const CourseFlow = () => {
                               ดูแล้ว
                             </>
                           ) : (
-                            'ทำเครื่องหมายว่าดูแล้ว'
+                            videoEnded ? "ทำเครื่องหมายว่าดูแล้ว" : "กรุณาดูวิดีโอให้จบก่อน"
                           )}
                         </Button>
                       </CardContent>
@@ -495,7 +547,6 @@ const CourseFlow = () => {
                     </Card>
                   )}
                 </div>
-
                 {/* Video Playlist */}
                 <div>
                   <Card className="shadow-lg">
