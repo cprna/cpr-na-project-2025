@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, Home, BookOpen, FileText, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -8,6 +8,7 @@ import SimpleLogin from "./SimpleLogin";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, login, logout, isAuthenticated } = useSimpleAuth();
   const [showLogin, setShowLogin] = useState(false);
 
@@ -35,22 +36,39 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.map(({ href, label, icon: Icon }) => (
-              <Button
-                key={href}
-                variant={location.pathname === href ? "default" : "ghost"}
-                asChild
-                className={cn(
-                  "flex items-center space-x-2",
-                  location.pathname === href && "bg-gradient-emergency text-white"
-                )}
-              >
-                <Link to={href}>
-                  <Icon className="w-4 h-4" />
-                  <span>{label}</span>
-                </Link>
-              </Button>
-            ))}
+            {navItems.map(({ href, label, icon: Icon }) => {
+              // เฉพาะปุ่มหลักสูตร ถ้ายังไม่ได้ login
+              if (href === "/course" && !isAuthenticated) {
+                return (
+                  <Button
+                    key={href}
+                    variant="ghost"
+                    className={cn("flex items-center space-x-2")}
+                    onClick={() => setShowLogin(true)}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{label}</span>
+                  </Button>
+                );
+              }
+              // ปุ่มอื่นๆ หรือล็อกอินแล้ว
+              return (
+                <Button
+                  key={href}
+                  variant={location.pathname === href ? "default" : "ghost"}
+                  asChild
+                  className={cn(
+                    "flex items-center space-x-2",
+                    location.pathname === href && "bg-gradient-emergency text-white"
+                  )}
+                >
+                  <Link to={href}>
+                    <Icon className="w-4 h-4" />
+                    <span>{label}</span>
+                  </Link>
+                </Button>
+              );
+            })}
           </div>
 
           <div className="flex items-center space-x-2">
@@ -84,7 +102,14 @@ const Navbar = () => {
       
       {showLogin && (
         <SimpleLogin 
-          onLogin={login}
+          onLogin={(user) => {
+            login(user);
+            setShowLogin(false);
+            // ถ้ากดปุ่มหลักสูตรก่อน login ให้เด้งไปที่ /course หลัง login
+            if (location.pathname !== "/course") {
+              navigate("/course");
+            }
+          }}
           onClose={() => setShowLogin(false)}
         />
       )}
