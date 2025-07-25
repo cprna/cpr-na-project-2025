@@ -9,8 +9,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, User, Calendar, Users, Briefcase } from "lucide-react";
 
+interface ProfileUser {
+  id: string;
+  full_name: string;
+  age: number;
+  gender: string;
+  occupation: string;
+  cpr_experience: string[];
+  created_at?: string;
+  last_login?: string;
+}
+
 interface SimpleLoginProps {
-  onLogin: (userData: any) => void;
+  onLogin: (userData: ProfileUser) => void;
   onClose: () => void;
 }
 
@@ -70,15 +81,15 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
           age: parseInt(formData.age),
           gender: formData.gender,
           occupation: formData.occupation,
-          cpr_experience: formData.cpr_experience // save as array
+          cpr_experience: formData.cpr_experience // save as array of string
         }])
         .select()
         .single();
 
       if (error) throw error;
 
-      // Store user data in localStorage
-      localStorage.setItem('profiles', JSON.stringify(data));
+      // Store user data in localStorage (use key 'profile_user')
+      localStorage.setItem('profile_user', JSON.stringify(data));
       
       toast({
         title: "เข้าสู่ระบบสำเร็จ",
@@ -147,7 +158,10 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
                 <Users className="w-4 h-4" />
                 เพศ
               </Label>
-              <Select onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
+              <Select 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
+                value={formData.gender}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="เลือกเพศ" />
                 </SelectTrigger>
