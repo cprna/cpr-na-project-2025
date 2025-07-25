@@ -81,9 +81,9 @@ const Index = () => {
               <Badge className="mb-6 bg-white/20 text-white border-white/30">
                 โครงการวิจัยและนวัตกรรมทางการพยาบาล
               </Badge>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                เรียนรู้การช่วย<span className="text-yellow-300">ฟื้นคืนชีพขั้นพื้นฐาน</span> \nและการใช้งานเครื่องกระตุกไฟฟ้าหัวใจอัตโนมัติ (AED) สำหรับประชาชน
-              </h1>
+              <h2 className="text-5xl md:text-6xl font-bold mb-6">
+                เรียนรู้การช่วย<span className="text-red-300">ฟื้นคืนชีพขั้นพื้นฐาน</span>และการใช้งานเครื่องกระตุกไฟฟ้าหัวใจอัตโนมัติ (AED) สำหรับประชาชน
+              </h2>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild className="bg-white text-primary hover:bg-white/90">
                   <Link to="/course">
