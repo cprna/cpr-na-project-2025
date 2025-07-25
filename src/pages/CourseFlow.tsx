@@ -182,9 +182,9 @@ const CourseFlow = () => {
     {
       id: 1,
       title: "บทนำ: ความสำคัญของการช่วยฟื้นคืนชีพ",
-      duration: "5:30",
+      duration: "5:55",
       description: "ทำความเข้าใจเกี่ยวกับความสำคัญของ CPR และสถานการณ์ที่ต้องใช้",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+      videoUrl: "https://www.youtube.com/embed/3xMfI-8c164?si=HNlOKSc2HDxLcnpy"
     },
     {
       id: 2,
