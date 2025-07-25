@@ -82,12 +82,8 @@ const Index = () => {
                 โครงการวิจัยและนวัตกรรมทางการพยาบาล
               </Badge>
               <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                เรียนรู้การช่วย<span className="text-yellow-300">ฟื้นคืนชีพ</span>
+                เรียนรู้การช่วย<span className="text-yellow-300">ฟื้นคืนชีพขั้นพื้นฐาน</span> \nและการใช้งานเครื่องกระตุกไฟฟ้าหัวใจอัตโนมัติ (AED) สำหรับประชาชน
               </h1>
-              <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto leading-relaxed">
-                พัฒนาทักษะการช่วยฟื้นคืนชีพขั้นพื้นฐานและการใช้เครื่อง AED 
-                เพื่อช่วยชีวิตผู้อื่นในสถานการณ์ฉุกเฉิน
-              </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild className="bg-white text-primary hover:bg-white/90">
                   <Link to="/course">
