@@ -94,7 +94,7 @@ const Index = () => {
                     เริ่มต้นเรียนรู้ <ArrowRight className="w-5 h-5 ml-2" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild className="border-white text-white hover:bg-white/10">
+                <Button size="lg" variant="outline" asChild className="border-white text-black hover:bg-white/10">
                   <Link to="/articles">
                     ดูบทความ
                   </Link>
