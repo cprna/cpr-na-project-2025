@@ -64,7 +64,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
 
     try {
       const { data, error } = await supabase
-        .from('simple_users')
+        .from('profiless')
         .insert([{
           full_name: formData.full_name,
           age: parseInt(formData.age),
@@ -78,7 +78,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
       if (error) throw error;
 
       // Store user data in localStorage
-      localStorage.setItem('simple_user', JSON.stringify(data));
+      localStorage.setItem('profiles', JSON.stringify(data));
       
       toast({
         title: "เข้าสู่ระบบสำเร็จ",
