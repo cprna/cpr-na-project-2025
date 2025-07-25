@@ -65,9 +65,9 @@ async function saveExamResult({
   answers: Record<number, string>;
   questions: any[];
 }) {
-  const simpleUser = JSON.parse(localStorage.getItem("simple_user") || "null");
-  if (!simpleUser) {
-    alert("ไม่พบข้อมูลผู้ใช้ simple_user ใน localStorage");
+  const profileUser = JSON.parse(localStorage.getItem("profile_user") || "null");
+  if (!profileUser) {
+    alert("ไม่พบข้อมูลผู้ใช้ profile_user ใน localStorage");
     return false;
   }
 
@@ -78,7 +78,7 @@ async function saveExamResult({
 
   const { error } = await supabase.from("exam_results").insert([
     {
-      simple_user_id: simpleUser.id,
+      user_id: profileUser.user_id || profileUser.id,
       exam_type: examType,
       score,
       total_questions: questions.length,
@@ -96,12 +96,12 @@ async function saveExamResult({
 
 // ====== ฟังก์ชันดึงผลสอบย้อนหลัง ======
 async function fetchExamResults() {
-  const simpleUser = JSON.parse(localStorage.getItem("simple_user") || "null");
-  if (!simpleUser) return null;
+  const profileUser = JSON.parse(localStorage.getItem("profile_user") || "null");
+  if (!profileUser) return null;
   const { data, error } = await supabase
     .from("exam_results")
     .select("*")
-    .eq("simple_user_id", simpleUser.id)
+    .eq("user_id", profileUser.user_id || profileUser.id)
     .order("created_at", { ascending: false });
   if (error) {
     console.error("Fetch exam results error:", error);
