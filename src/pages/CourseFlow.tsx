@@ -16,6 +16,7 @@ import {
   BookOpen
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { supabase } from "@/integrations/supabase/client";
 
 // ===== YouTubePlayer component =====
 const YouTubePlayer = ({ youtubeId, onEnded }: { youtubeId: string, onEnded: () => void }) => {
@@ -58,6 +59,36 @@ const YouTubePlayer = ({ youtubeId, onEnded }: { youtubeId: string, onEnded: () 
 
   return <div ref={playerRef} className="aspect-video bg-black rounded-lg mb-4 overflow-hidden" />;
 };
+
+// ====== ฟังก์ชันบันทึกผลสอบลง supabase ======
+async function saveExamResult({
+  examType,
+  answers,
+  questions,
+}: {
+  examType: "pre_test" | "post_test";
+  answers: Record<number, string>;
+  questions: any[];
+}) {
+  const simpleUser = JSON.parse(localStorage.getItem("simple_user") || "null");
+  if (!simpleUser) return;
+
+  const score = questions.reduce(
+    (acc, q, idx) => acc + (parseInt(answers[idx]) === q.correct ? 1 : 0),
+    0
+  );
+
+  await supabase.from("exam_results").insert([
+    {
+      simple_user_id: simpleUser.id,
+      exam_type: examType,
+      score,
+      total_questions: questions.length,
+      answers: JSON.stringify(answers),
+      created_at: new Date().toISOString(),
+    },
+  ]);
+}
 
 const CourseFlow = () => {
   const [currentStep, setCurrentStep] = useState<'preTest' | 'learn' | 'postTest' | 'complete'>('preTest');
@@ -264,14 +295,26 @@ const CourseFlow = () => {
     }));
   };
 
-  const nextQuestion = () => {
+  const nextQuestion = async () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       if (currentStep === 'preTest') {
+        // save preTest
+        await saveExamResult({
+          examType: "pre_test",
+          answers: preTestAnswers,
+          questions,
+        });
         setCurrentStep('learn');
         setCurrentQuestion(0);
       } else if (currentStep === 'postTest') {
+        // save postTest
+        await saveExamResult({
+          examType: "post_test",
+          answers: postTestAnswers,
+          questions,
+        });
         setCurrentStep('complete');
       }
     }
