@@ -16,13 +16,13 @@ export const useProfileAuth = () => {
 
   useEffect(() => {
     // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('profiles');
+    const storedUser = localStorage.getItem('profile_user');
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
         console.error('Error parsing stored profile:', error);
-        localStorage.removeItem('profiles');
+        localStorage.removeItem('profile_user');
       }
     }
     setIsLoading(false);
@@ -30,12 +30,12 @@ export const useProfileAuth = () => {
 
   const login = (profileData: Profile) => {
     setUser(profileData);
-    localStorage.setItem('profiles', JSON.stringify(profileData));
+    localStorage.setItem('profile_user', JSON.stringify(profileData));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('profiles');
+    localStorage.removeItem('profile_user');
   };
 
   return {
