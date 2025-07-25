@@ -1,11 +1,11 @@
 {
-  "name": "ParkPass - Smart Parking System",
-  "short_name": "ParkPass",
+  "name": "CPR-NA",
+  "short_name": "CPR-NA",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2563eb",
-  "description": "Smart parking platform for everyone.",
+  "theme_color": "#ff0000",
+  "description": " ",
   "orientation": "portrait",
   "scope": "/",
   "lang": "en",
@@ -17,13 +17,13 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png", 
+      "src": "/icon-192.png", 
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["travel", "navigation", "utilities"],
+  "categories": ["Health"],
   "screenshots": [
     {
       "src": "/logo.svg", 
