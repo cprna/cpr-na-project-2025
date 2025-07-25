@@ -130,11 +130,6 @@ const Index = () => {
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-muted-foreground mb-6">{feature.description}</p>
-                    <Button asChild className="w-full bg-gradient-medical text-white">
-                      <Link to={feature.href}>
-                        เริ่มต้น <ArrowRight className="w-4 h-4 ml-2" />
-                      </Link>
-                    </Button>
                   </CardContent>
                 </Card>
               ))}
