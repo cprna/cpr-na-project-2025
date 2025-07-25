@@ -76,7 +76,7 @@ const Index = () => {
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${heroImage})` }}
           >
-          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <div className="absolute inset-0 bg-black opacity-25"></div>
           </div>
           <div className="relative container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center text-white">
