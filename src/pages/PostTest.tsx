@@ -6,11 +6,17 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Award, ClipboardList, ArrowRight, Trophy } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { useSimpleAuth } from "@/hooks/useSimpleAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const PostTest = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showResults, setShowResults] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useSimpleAuth();
+  const { toast } = useToast();
 
   const questions = [
     {
@@ -172,10 +178,57 @@ const PostTest = () => {
     }));
   };
 
-  const nextQuestion = () => {
+  const nextQuestion = async () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
+      await submitExamResults();
+    }
+  };
+
+  const submitExamResults = async () => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    try {
+      const score = calculateScore();
+      
+      // บันทึกผลสอบลงฐานข้อมูล
+      const examData = {
+        exam_type: 'post_test',
+        score,
+        total_questions: questions.length,
+        answers: answers,
+        simple_user_id: user?.id || null,
+        user_id: user?.id || null // ใช้ simple_user_id เป็นหลัก
+      };
+
+      const { error } = await supabase
+        .from('exam_results')
+        .insert(examData);
+
+      if (error) {
+        console.error('Error saving exam results:', error);
+        toast({
+          title: "เกิดข้อผิดพลาด",
+          description: "ไม่สามารถบันทึกผลการทดสอบได้",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "บันทึกผลการทดสอบเรียบร้อย",
+          description: "ผลการทดสอบของคุณถูกบันทึกแล้ว",
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting exam:', error);
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถบันทึกผลการทดสอบได้",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
       setShowResults(true);
     }
   };
@@ -312,10 +365,10 @@ const PostTest = () => {
               <div className="flex justify-end pt-4">
                 <Button
                   onClick={nextQuestion}
-                  disabled={!answers[currentQuestion]}
+                  disabled={!answers[currentQuestion] || isSubmitting}
                   className="bg-gradient-emergency text-white"
                 >
-                  {currentQuestion === questions.length - 1 ? 'เสร็จสิ้น' : 'ถัดไป'}
+                  {isSubmitting ? 'กำลังบันทึก...' : currentQuestion === questions.length - 1 ? 'เสร็จสิ้น' : 'ถัดไป'}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
