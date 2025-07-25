@@ -1,41 +1,41 @@
 import { useState, useEffect } from 'react';
 
-interface SimpleUser {
+interface Profile {
   id: string;
-  full_name: string;
+  name: string;
   age: number;
-  gender: string;
+  gender: string; // 'ชาย', 'หญิง', 'อื่นๆ'
   occupation: string;
-  created_at: string;
-  last_login: string;
+  cpr_experience?: string[]; // เพิ่ม field นี้
+  login_date?: string;
 }
 
-export const useSimpleAuth = () => {
-  const [user, setUser] = useState<SimpleUser | null>(null);
+export const useProfileAuth = () => {
+  const [user, setUser] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('simple_user');
+    const storedUser = localStorage.getItem('profiles');
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
-        console.error('Error parsing stored user:', error);
-        localStorage.removeItem('simple_user');
+        console.error('Error parsing stored profile:', error);
+        localStorage.removeItem('profiles');
       }
     }
     setIsLoading(false);
   }, []);
 
-  const login = (userData: SimpleUser) => {
-    setUser(userData);
-    localStorage.setItem('simple_user', JSON.stringify(userData));
+  const login = (profileData: Profile) => {
+    setUser(profileData);
+    localStorage.setItem('profiles', JSON.stringify(profileData));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('simple_user');
+    localStorage.removeItem('profiles');
   };
 
   return {
