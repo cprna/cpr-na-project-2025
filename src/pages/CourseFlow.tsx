@@ -24,13 +24,11 @@ const YouTubePlayer = ({ youtubeId, onEnded }: { youtubeId: string, onEnded: () 
   const ytPlayer = useRef<any>(null);
 
   useEffect(() => {
-    // Load YouTube API if needed
     if (!(window as any).YT) {
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
       document.body.appendChild(tag);
     }
-
     function createPlayer() {
       ytPlayer.current = new (window as any).YT.Player(playerRef.current, {
         height: "100%",
@@ -45,18 +43,15 @@ const YouTubePlayer = ({ youtubeId, onEnded }: { youtubeId: string, onEnded: () 
         }
       });
     }
-
     if ((window as any).YT && (window as any).YT.Player) {
       createPlayer();
     } else {
       (window as any).onYouTubeIframeAPIReady = createPlayer;
     }
-
     return () => {
       if (ytPlayer.current && ytPlayer.current.destroy) ytPlayer.current.destroy();
     };
   }, [youtubeId, onEnded]);
-
   return <div ref={playerRef} className="aspect-video bg-black rounded-lg mb-4 overflow-hidden" />;
 };
 
@@ -71,14 +66,17 @@ async function saveExamResult({
   questions: any[];
 }) {
   const simpleUser = JSON.parse(localStorage.getItem("simple_user") || "null");
-  if (!simpleUser) return;
+  if (!simpleUser) {
+    alert("ไม่พบข้อมูลผู้ใช้ simple_user ใน localStorage");
+    return false;
+  }
 
   const score = questions.reduce(
     (acc, q, idx) => acc + (parseInt(answers[idx]) === q.correct ? 1 : 0),
     0
   );
 
-  await supabase.from("exam_results").insert([
+  const { error } = await supabase.from("exam_results").insert([
     {
       simple_user_id: simpleUser.id,
       exam_type: examType,
@@ -88,6 +86,28 @@ async function saveExamResult({
       created_at: new Date().toISOString(),
     },
   ]);
+  if (error) {
+    alert("เกิดข้อผิดพลาดในการบันทึกผลสอบ: " + error.message);
+    console.error("Save exam error:", error);
+    return false;
+  }
+  return true;
+}
+
+// ====== ฟังก์ชันดึงผลสอบย้อนหลัง ======
+async function fetchExamResults() {
+  const simpleUser = JSON.parse(localStorage.getItem("simple_user") || "null");
+  if (!simpleUser) return null;
+  const { data, error } = await supabase
+    .from("exam_results")
+    .select("*")
+    .eq("simple_user_id", simpleUser.id)
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("Fetch exam results error:", error);
+    return null;
+  }
+  return data;
 }
 
 const CourseFlow = () => {
@@ -97,11 +117,9 @@ const CourseFlow = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [completedVideos, setCompletedVideos] = useState<number[]>([]);
   const [currentVideo, setCurrentVideo] = useState<number | null>(1);
-
-  // สำหรับเช็ค video จบจริง
   const [videoEnded, setVideoEnded] = useState(false);
+  const [examResults, setExamResults] = useState<any[]>([]);
 
-  // helper สำหรับแยก youtubeId จาก embed url
   const getYouTubeId = (url: string) => {
     const m = url.match(/\/embed\/([^\?&]+)/);
     return m ? m[1] : "";
@@ -110,6 +128,14 @@ const CourseFlow = () => {
   useEffect(() => {
     setVideoEnded(false); // reset เมื่อเปลี่ยนวิดีโอ
   }, [currentVideo]);
+
+  useEffect(() => {
+    if (currentStep === "complete") {
+      fetchExamResults().then(data => {
+        if (data) setExamResults(data);
+      });
+    }
+  }, [currentStep]);
 
   const questions = [
     {
@@ -300,22 +326,24 @@ const CourseFlow = () => {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       if (currentStep === 'preTest') {
-        // save preTest
-        await saveExamResult({
+        const ok = await saveExamResult({
           examType: "pre_test",
           answers: preTestAnswers,
           questions,
         });
-        setCurrentStep('learn');
-        setCurrentQuestion(0);
+        if (ok) {
+          setCurrentStep('learn');
+          setCurrentQuestion(0);
+        }
       } else if (currentStep === 'postTest') {
-        // save postTest
-        await saveExamResult({
+        const ok = await saveExamResult({
           examType: "post_test",
           answers: postTestAnswers,
           questions,
         });
-        setCurrentStep('complete');
+        if (ok) {
+          setCurrentStep('complete');
+        }
       }
     }
   };
@@ -367,7 +395,6 @@ const CourseFlow = () => {
         <Navbar />
         <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
           <div className="container mx-auto max-w-4xl">
-            {/* Progress Header */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
@@ -380,7 +407,6 @@ const CourseFlow = () => {
                 ขั้นตอนที่ 1: ทดสอบความรู้ก่อนเรียน
               </div>
             </div>
-
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-xl font-semibold">ทดสอบความรู้ก่อนเรียน</h2>
@@ -390,7 +416,6 @@ const CourseFlow = () => {
               </div>
               <Progress value={(currentQuestion / questions.length) * 100} className="h-2" />
             </div>
-
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -416,7 +441,6 @@ const CourseFlow = () => {
                     </div>
                   ))}
                 </RadioGroup>
-
                 <div className="flex justify-end pt-4">
                   <Button
                     onClick={nextQuestion}
@@ -441,7 +465,6 @@ const CourseFlow = () => {
       <>
         <Navbar />
         <div className="min-h-screen bg-gradient-to-br from-background to-muted">
-          {/* Progress Header */}
           <div className="container mx-auto px-4 py-6">
             <div className="max-w-4xl mx-auto mb-6">
               <div className="flex items-center justify-between mb-4">
@@ -456,8 +479,6 @@ const CourseFlow = () => {
               </div>
             </div>
           </div>
-
-          {/* Hero Section */}
           <div className="bg-gradient-hero text-white py-8">
             <div className="container mx-auto px-4">
               <div className="max-w-3xl mx-auto text-center">
@@ -481,9 +502,7 @@ const CourseFlow = () => {
               </div>
             </div>
           </div>
-
           <div className="container mx-auto px-4 py-8">
-            {/* Progress Section */}
             <div className="max-w-4xl mx-auto mb-8">
               <Card>
                 <CardHeader>
@@ -514,16 +533,12 @@ const CourseFlow = () => {
                 </CardContent>
               </Card>
             </div>
-
-            {/* Video Content */}
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Video Player */}
                 <div className="lg:col-span-2">
                   {currentVideo ? (
                     <Card className="shadow-lg">
                       <CardContent className="p-6">
-                        {/* เปลี่ยนจาก iframe เป็น YouTubePlayer */}
                         <YouTubePlayer
                           youtubeId={getYouTubeId(videos.find(v => v.id === currentVideo)?.videoUrl ?? "")}
                           onEnded={() => setVideoEnded(true)}
@@ -562,7 +577,6 @@ const CourseFlow = () => {
                     </Card>
                   )}
                 </div>
-                {/* Video Playlist */}
                 <div>
                   <Card className="shadow-lg">
                     <CardHeader>
@@ -619,7 +633,6 @@ const CourseFlow = () => {
         <Navbar />
         <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
           <div className="container mx-auto max-w-4xl">
-            {/* Progress Header */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
@@ -632,7 +645,6 @@ const CourseFlow = () => {
                 ขั้นตอนที่ 3: ทดสอบความรู้หลังเรียน
               </div>
             </div>
-
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-xl font-semibold">ทดสอบความรู้หลังเรียน</h2>
@@ -642,7 +654,6 @@ const CourseFlow = () => {
               </div>
               <Progress value={(currentQuestion / questions.length) * 100} className="h-2" />
             </div>
-
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -668,7 +679,6 @@ const CourseFlow = () => {
                     </div>
                   ))}
                 </RadioGroup>
-
                 <div className="flex justify-end pt-4">
                   <Button
                     onClick={nextQuestion}
@@ -721,7 +731,24 @@ const CourseFlow = () => {
                   </div>
                 </div>
               </div>
-              
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold mb-3">ประวัติการทำข้อสอบของคุณ</h3>
+                {examResults.length === 0 ? (
+                  <p className="text-muted-foreground">ไม่พบข้อมูลผลสอบในระบบ</p>
+                ) : (
+                  <div className="space-y-2">
+                    {examResults.map((result, idx) => (
+                      <div key={result.id || idx} className="p-3 rounded bg-muted/10 border">
+                        <div className="flex flex-wrap gap-4 justify-between items-center">
+                          <span>ประเภท: <b>{result.exam_type === "pre_test" ? "ก่อนเรียน" : "หลังเรียน"}</b></span>
+                          <span>คะแนน: <b>{result.score} / {result.total_questions}</b></span>
+                          <span>วันที่: <b>{(new Date(result.created_at)).toLocaleString("th-TH")}</b></span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div className="p-6 bg-success/10 border border-success/20 rounded-lg">
                 <h3 className="text-xl font-semibold text-success mb-2">
                   🎉 ยินดีด้วย! คุณผ่านหลักสูตรแล้ว
