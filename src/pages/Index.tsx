@@ -106,7 +106,7 @@ const Index = () => {
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold mb-6">ขั้นตอนการเรียนรู้</h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                เรียนรู้อย่างเป็นระบบผ่าน 4 ขั้นตอนที่ออกแบบมาเป็นพิเศษ
+                เรียนรู้อย่างเป็นระบบผ่าน 4 ขั้นตอน
               </p>
             </div>
             
