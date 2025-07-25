@@ -21,30 +21,26 @@ const Index = () => {
     {
       icon: ClipboardList,
       title: "ทดสอบก่อนเรียน",
-      description: "ประเมินความรู้พื้นฐานก่อนเริ่มการเรียน",
       color: "text-emergency",
       href: "/pre-test"
     },
     {
       icon: Video,
-      title: "วิดีโอการเรียนรู้",
-      description: "เรียนรู้ผ่านวิดีโอคุณภาพสูงทีละขั้นตอน",
+      title: "เนื้อหาการเรียนรู้",
       color: "text-medical",
       href: "/learn"
     },
     {
-      icon: ClipboardList,
-      title: "ทดสอบหลังเรียน",
-      description: "ประเมินผลการเรียนรู้และรับใบประกาศ",
-      color: "text-warning",
-      href: "/post-test"
-    },
-    {
       icon: FileText,
       title: "บทความความรู้",
-      description: "เพิ่มพูนความรู้ด้วยบทความเชิงลึก",
       color: "text-primary",
       href: "/articles"
+    },
+    {
+      icon: ClipboardList,
+      title: "ทดสอบหลังเรียน",
+      color: "text-warning",
+      href: "/post-test"
     }
   ];
 
