@@ -108,32 +108,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Statistics Section */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">ทำไมต้องเรียนรู้ CPR?</h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                ข้อมูลสถิติที่แสดงถึงความสำคัญของการมีทักษะ CPR
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              {stats.map((stat, index) => (
-                <Card key={index} className="text-center shadow-lg border-0">
-                  <CardContent className="pt-8 pb-6">
-                    <div className="w-16 h-16 bg-gradient-emergency rounded-full flex items-center justify-center mx-auto mb-4">
-                      <stat.icon className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="text-4xl font-bold text-primary mb-2">{stat.number}</div>
-                    <div className="text-lg font-semibold mb-2">{stat.label}</div>
-                    <div className="text-muted-foreground text-sm">{stat.description}</div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Features Section */}
         <section className="py-20">
           <div className="container mx-auto px-4">
@@ -165,6 +139,33 @@ const Index = () => {
                         เริ่มต้น <ArrowRight className="w-4 h-4 ml-2" />
                       </Link>
                     </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+
+        {/* Statistics Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">ทำไมต้องเรียนรู้ CPR?</h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                ข้อมูลสถิติที่แสดงถึงความสำคัญของการมีทักษะ CPR
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              {stats.map((stat, index) => (
+                <Card key={index} className="text-center shadow-lg border-0">
+                  <CardContent className="pt-8 pb-6">
+                    <div className="w-16 h-16 bg-gradient-emergency rounded-full flex items-center justify-center mx-auto mb-4">
+                      <stat.icon className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-4xl font-bold text-primary mb-2">{stat.number}</div>
+                    <div className="text-lg font-semibold mb-2">{stat.label}</div>
+                    <div className="text-muted-foreground text-sm">{stat.description}</div>
                   </CardContent>
                 </Card>
               ))}
