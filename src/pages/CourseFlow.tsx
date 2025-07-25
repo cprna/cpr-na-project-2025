@@ -236,45 +236,17 @@ const CourseFlow = () => {
   const videos = [
     {
       id: 1,
-      title: "บทนำ: ความสำคัญของการช่วยฟื้นคืนชีพ",
+      title: "การช่วยชีวิตขั้นพื้นฐาน(Basic Life Support)",
       duration: "5:55",
       description: "ทำความเข้าใจเกี่ยวกับความสำคัญของ CPR และสถานการณ์ที่ต้องใช้",
       videoUrl: "https://www.youtube.com/embed/3xMfI-8c164?si=HNlOKSc2HDxLcnpy"
     },
     {
       id: 2,
-      title: "การตรวจสอบการตอบสนองและการหายใจ",
-      duration: "7:45",
+      title: "การช่วยฟื้นคืนชีพขั้นพื้นฐาน(CPR) และการใช้เครื่องเออีดี(AED)",
+      duration: "6.25",
       description: "วิธีการตรวจสอบความรู้สึกตัวและการหายใจของผู้ป่วย",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 3,
-      title: "เทคนิคการกดหน้าอกที่ถูกต้อง",
-      duration: "10:20",
-      description: "ท่าทาง จังหวะ และความลึกในการกดหน้าอกที่มีประสิทธิภาพ",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 4,
-      title: "การเป่าปากให้ลมหายใจ",
-      duration: "6:15",
-      description: "วิธีการเป่าปากให้ลมหายใจอย่างถูกต้องและปลอดภัย",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 5,
-      title: "การใช้เครื่อง AED",
-      duration: "12:30",
-      description: "ขั้นตอนการใช้เครื่อง AED ตั้งแต่เปิดเครื่องจนถึงการช็อก",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 6,
-      title: "การประสานงานระหว่าง CPR และ AED",
-      duration: "8:45",
-      description: "การทำงานร่วมกันระหว่าง CPR และการใช้เครื่อง AED",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+      videoUrl: "https://www.youtube.com/embed/hr6Ig4WUcZA?si=xnQVF00bAXQ5e1aq"
     }
   ];
 
