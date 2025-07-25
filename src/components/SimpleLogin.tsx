@@ -11,6 +11,7 @@ import { Heart, User, Calendar, Users, Briefcase } from "lucide-react";
 
 interface ProfileUser {
   id: string;
+  user_id: string;
   full_name: string;
   age: number;
   gender: string;
@@ -18,6 +19,7 @@ interface ProfileUser {
   cpr_experience: string[];
   created_at?: string;
   last_login?: string;
+  updated_at?: string;
 }
 
 interface SimpleLoginProps {
@@ -74,16 +76,20 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
     setIsLoading(true);
 
     try {
+      // สร้าง UUID สำหรับ user
+      const user_id = crypto.randomUUID();
+
       const { data, error } = await supabase
         .from('profiles')
         .insert([{
+          user_id,
           full_name: formData.full_name,
           age: parseInt(formData.age),
           gender: formData.gender,
           occupation: formData.occupation,
-          cpr_experience: formData.cpr_experience // save as array of string
+          cpr_experience: formData.cpr_experience
         }])
-        .select()
+        .select('id, user_id, full_name, age, gender, occupation, cpr_experience, created_at, last_login, updated_at')
         .single();
 
       if (error) throw error;
