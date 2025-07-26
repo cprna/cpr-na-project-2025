@@ -278,7 +278,7 @@ const Articles = () => {
       readTime: "1 นาที",
       content: <></>,
       icon: FileText,
-      imageUrl: "/public/poster1.pdf_page-0001.jpg"
+      imageUrl: "/poster1.pdf_page-0001.jpg"
     },
     {
       id: "poster-aed",
@@ -289,7 +289,7 @@ const Articles = () => {
       readTime: "1 นาที",
       content: <></>,
       icon: FileText,
-      imageUrl: "/public/poster2.pdf_page-0002.jpg"
+      imageUrl: "/poster2.pdf_page-0002.jpg"
     },
     {
       id: "basics",
