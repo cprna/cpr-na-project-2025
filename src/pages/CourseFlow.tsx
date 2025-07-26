@@ -599,7 +599,7 @@ const CourseFlow = () => {
                   </div>
                   {progressPercentage === 100 && (
                     <div className="mt-4 p-4 bg-success/10 border border-success/20 rounded-lg">
-                      <p className="text-success font-semibold mb-2">🎉 ยินดีด้วย! คุณดูวิดีโอครบทุกตอนแล้ว</p>
+                      <p className="text-success font-semibold mb-2">ยินดีด้วย! คุณดูวิดีโอครบทุกคลิปแล้ว</p>
                       <Button 
                         className="bg-gradient-medical text-white"
                         onClick={() => setCurrentStep('postTest')}
@@ -915,11 +915,11 @@ const CourseFlow = () => {
               <div className={`p-6 ${postTestScore >= 9 ? 'bg-success/10 border-success/20' : 'bg-destructive/10 border-destructive/20'} border rounded-lg`}>
                 {postTestScore >= 9 ? (
                   <h3 className="text-xl font-semibold text-success mb-2">
-                    🎉 ยินดีด้วย! คุณผ่านหลักสูตรแล้ว
+                     ยินดีด้วย! คุณผ่านหลักสูตรแล้ว
                   </h3>
                 ) : (
                   <h3 className="text-xl font-semibold text-destructive mb-2">
-                    ❌ ขออภัย คุณยังไม่ผ่านหลักสูตร
+                     ขออภัย คุณยังไม่ผ่านหลักสูตร
                   </h3>
                 )}
                 <p className="text-muted-foreground mb-2">
