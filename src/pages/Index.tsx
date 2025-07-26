@@ -196,7 +196,7 @@ const Index = () => {
                     <div className="flex items-start space-x-4">
                       <CheckCircle className="w-6 h-6 text-medical mt-1" />
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">รียนรู้ทักษะ CPR พื้นฐาน</h3>
+                        <h3 className="text-lg font-semibold mb-2">เรียนรู้ทักษะ CPR พื้นฐาน</h3>
                         <p className="text-muted-foreground">
                            เพื่อให้สามารถเรียนรู้การกดหน้าอกและเป่าปากได้อย่างถูกต้อง
                         </p>
@@ -224,7 +224,7 @@ const Index = () => {
                     <div className="flex items-start space-x-4">
                       <CheckCircle className="w-6 h-6 text-warning mt-1" />
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">สริมสร้างทักษะการตัดสินใจในภาวะฉุกเฉิน</h3>
+                        <h3 className="text-lg font-semibold mb-2">เสริมสร้างทักษะการตัดสินใจในภาวะฉุกเฉิน</h3>
                         <p className="text-muted-foreground">
                           เรียนรู้แนวทางการประเมินสถานการณ์และตัดสินใจช่วยเหลือเบื้องต้นได้อย่างรวดเร็วและเหมาะสม
                         </p>
