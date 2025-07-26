@@ -29,6 +29,7 @@ interface SimpleLoginProps {
 
 const occupations = [
   "นักศึกษา",
+  "นักเรียน",
   "ข้าราชการ",
   "พนักงานรัฐวิสาหกิจ",
   "พนักงานบริษัทเอกชน",
