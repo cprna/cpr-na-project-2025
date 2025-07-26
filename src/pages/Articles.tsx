@@ -412,14 +412,6 @@ const Articles = () => {
                   </div>
                   <CardTitle className="text-xl mb-2">{article.title}</CardTitle>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <User className="w-4 h-4" />
-                      <span>{article.author}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{article.readTime}</span>
-                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
