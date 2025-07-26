@@ -271,22 +271,22 @@ const Articles = () => {
   const articles: Article[] = [
     {
       id: "poster-drcab",
-      title: "ขั้นตอน D-R-C-A-B ฉบับโปสเตอร์",
+      title: "การใช้เครื่องเออีดี (AED)",
       type: "poster",
       category: "โปสเตอร์",
-      author: "ทีมวิชาการ",
-      readTime: "1 นาที",
+      author: " ",
+      readTime: " ",
       content: <></>,
       icon: FileText,
       imageUrl: "/poster1.pdf_page-0001.jpg"
     },
     {
       id: "poster-aed",
-      title: "วิธีใช้เครื่อง AED ฉบับโปสเตอร์",
+      title: "การช่วยฟื้นคืนชีพ",
       type: "poster",
       category: "โปสเตอร์",
-      author: "ทีมวิชาการ",
-      readTime: "1 นาที",
+      author: " ",
+      readTime: " ",
       content: <></>,
       icon: FileText,
       imageUrl: "/poster2.pdf_page-0002.jpg"
@@ -296,8 +296,8 @@ const Articles = () => {
       title: "ความรู้พื้นฐาน CPR",
       type: "article",
       category: "ความรู้พื้นฐาน",
-      author: "ทีมวิชาการ",
-      readTime: "5 นาที",
+      author: " ",
+      readTime: " ",
       content: <BasicsContent />,
       icon: BookOpen
     },
@@ -306,8 +306,8 @@ const Articles = () => {
       title: "ขั้นตอน D-R-C-A-B",
       type: "article",
       category: "วิธีการ",
-      author: "ทีมแพทย์ฉุกเฉิน",
-      readTime: "7 นาที",
+      author: " ",
+      readTime: " ",
       content: <DRCABContent />,
       icon: Activity
     },
@@ -316,8 +316,8 @@ const Articles = () => {
       title: "การใช้เครื่อง AED",
       type: "article",
       category: "อุปกรณ์",
-      author: "ทีมแพทย์ฉุกเฉิน",
-      readTime: "5 นาที",
+      author: " ",
+      readTime: " ",
       content: <AEDContent />,
       icon: Zap
     },
@@ -326,8 +326,8 @@ const Articles = () => {
       title: "อุปกรณ์ที่จำเป็นสำหรับการทำ CPR",
       type: "article",
       category: "อุปกรณ์",
-      author: "ทีมแพทย์ฉุกเฉิน",
-      readTime: "6 นาที",
+      author: " ",
+      readTime: " ",
       icon: Target,
       content: (
         <Card>
