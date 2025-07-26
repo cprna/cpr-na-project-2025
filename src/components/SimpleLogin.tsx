@@ -28,30 +28,15 @@ interface SimpleLoginProps {
 }
 
 const occupations = [
-  "นักศึกษา",
-  "นักเรียน",
-  "ข้าราชการ",
-  "พนักงานรัฐวิสาหกิจ",
-  "พนักงานบริษัทเอกชน",
-  "ธุรกิจส่วนตัว/ค้าขาย",
-  "รับจ้างทั่วไป",
-  "แม่บ้าน/พ่อบ้าน",
-  "เกษียณ",
-  "อื่นๆ"
+  "นักศึกษา", "นักเรียน", "ข้าราชการ", "พนักงานรัฐวิสาหกิจ", "พนักงานบริษัทเอกชน",
+  "ธุรกิจส่วนตัว/ค้าขาย", "รับจ้างทั่วไป", "แม่บ้าน/พ่อบ้าน", "เกษียณ", "อื่นๆ"
 ];
 
-const studentDegrees = [
-  "ปริญญาตรี",
-  "ปริญญาโท",
-  "ปริญญาเอก"
-];
+const studentDegrees = ["ปริญญาตรี", "ปริญญาโท", "ปริญญาเอก"];
 
 const cprExperiences = [
-  "เคยเรียนในโรงเรียน / มหาวิทยาลัย",
-  "เคยอบรมจากหน่วยงานหรือหลักสูตร CPR",
-  "เคยดูวิดีโอหรือเรียนออนไลน์",
-  "เคยเห็นเหตุการณ์จริง",
-  "ไม่เคยเลย"
+  "เคยเรียนในโรงเรียน / มหาวิทยาลัย", "เคยอบรมจากหน่วยงานหรือหลักสูตร CPR",
+  "เคยดูวิดีโอหรือเรียนออนไลน์", "เคยเห็นเหตุการณ์จริง", "ไม่เคยเลย"
 ];
 
 const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
@@ -80,7 +65,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (
       !formData.full_name ||
       !formData.age ||
@@ -99,11 +84,9 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
     setIsLoading(true);
 
     try {
-      // สร้าง UUID สำหรับ user
       const user_id = crypto.randomUUID();
-
       const { data, error } = await supabase
-        .from('profiles')
+        .from("profiles")
         .insert([{
           user_id,
           full_name: formData.full_name,
@@ -115,22 +98,21 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
           university: formData.occupation === "นักศึกษา" ? formData.university : null,
           cpr_experience: formData.cpr_experience
         }])
-        .select('id, user_id, full_name, age, gender, occupation, cpr_experience, created_at, last_login, updated_at')
+        .select("id, user_id, full_name, age, gender, occupation, cpr_experience, created_at, last_login, updated_at")
         .single();
 
       if (error) throw error;
 
-      // Store user data in localStorage (use key 'profile_user')
-      localStorage.setItem('profile_user', JSON.stringify(data));
-      
+      localStorage.setItem("profile_user", JSON.stringify(data));
+
       toast({
         title: "เข้าสู่ระบบสำเร็จ",
-        description: `ยินดีต้อนรับ ${formData.full_name}`,
+        description: `ยินดีต้อนรับ ${formData.full_name}`
       });
 
       onLogin(data);
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "เกิดข้อผิดพลาด",
         description: "ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง",
@@ -143,7 +125,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
         <CardHeader className="text-center">
           <div className="w-16 h-16 bg-gradient-emergency rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="w-8 h-8 text-white" />
@@ -151,8 +133,10 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
           <CardTitle className="text-2xl">เข้าสู่ระบบ</CardTitle>
           <p className="text-muted-foreground">กรอกข้อมูลเพื่อเริ่มใช้งาน</p>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* full name */}
             <div className="space-y-2">
               <Label htmlFor="full_name" className="flex items-center gap-2">
                 <User className="w-4 h-4" />
@@ -168,6 +152,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
               />
             </div>
 
+            {/* age */}
             <div className="space-y-2">
               <Label htmlFor="age" className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
@@ -185,12 +170,13 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
               />
             </div>
 
+            {/* gender */}
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 เพศ
               </Label>
-              <Select 
+              <Select
                 onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
                 value={formData.gender}
               >
@@ -205,23 +191,22 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
               </Select>
             </div>
 
+            {/* occupation */}
             <div className="space-y-2">
               <Label htmlFor="occupation" className="flex items-center gap-2">
                 <Briefcase className="w-4 h-4" />
                 อาชีพ
               </Label>
-              <Select 
+              <Select
                 onValueChange={(value) => {
                   setFormData(prev => ({
                     ...prev,
                     occupation: value,
-                    // รีเซ็ตข้อมูลนักศึกษาเมื่อเปลี่ยนอาชีพ
                     student_year: value === "นักศึกษา" ? prev.student_year : "",
                     student_degree: value === "นักศึกษา" ? prev.student_degree : "",
                     university: value === "นักศึกษา" ? prev.university : "",
-                    // รีเซ็ตอาชีพอื่นๆ
                     other_occupation: value === "อื่นๆ" ? prev.other_occupation : ""
-                  }))
+                  }));
                 }}
                 value={formData.occupation}
               >
@@ -235,7 +220,6 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
                 </SelectContent>
               </Select>
 
-              {/* แสดงฟิลด์เพิ่มเติมสำหรับอาชีพอื่นๆ */}
               {formData.occupation === "อื่นๆ" && (
                 <div className="mt-2">
                   <Input
@@ -247,7 +231,6 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
                 </div>
               )}
 
-              {/* แสดงฟิลด์เพิ่มเติมสำหรับนักศึกษา */}
               {formData.occupation === "นักศึกษา" && (
                 <div className="space-y-2 mt-2">
                   <Select
@@ -288,6 +271,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
               )}
             </div>
 
+            {/* CPR experience */}
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 ประสบการณ์เกี่ยวกับการทำ CPR
