@@ -96,7 +96,7 @@ const Index = () => {
           <div className="relative container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center text-white">
               <Badge className="mb-8 md:mb-6 bg-white/20 text-white border-white/30">
-                โครงการวิจัยและนวัตกรรมทางการพยาบาล
+                วิจัยและนวัตกรรมทางการพยาบาล
               </Badge>
               <h4 className="text-3xl md:text-4xl font-bold mb-8 md:mb-6 leading-relaxed md:leading-normal">
                 เรียนรู้การช่วย<span className="text-red-50">ฟื้นคืนชีพขั้นพื้นฐาน</span>และการใช้งานเครื่องกระตุกไฟฟ้าหัวใจอัตโนมัติ (AED) สำหรับประชาชน
@@ -266,7 +266,7 @@ const Index = () => {
                 className="bg-white text-primary hover:bg-white/90"
                 onClick={handleStartLearning}
               >
-                เริ่มต้นเรียนรู้เลย <ArrowRight className="w-5 h-5 ml-2" />
+                เริ่มต้นเรียนรู้ <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
           </div>
