@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +15,23 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import heroImage from "@/assets/hero-cpr-aed.jpg";
+import { useState } from "react";
+import { useSimpleAuth } from "@/hooks/useSimpleAuth";
+import SimpleLogin from "@/components/SimpleLogin";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, login } = useSimpleAuth();
+  const [showLogin, setShowLogin] = useState(false);
+
+  const handleStartLearning = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      setShowLogin(true);
+    } else {
+      navigate("/course");
+    }
+  };
   const features = [
     {
       icon: ClipboardList,
@@ -80,17 +95,19 @@ const Index = () => {
           </div>
           <div className="relative container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center text-white">
-              <Badge className="mb-6 bg-white/20 text-white border-white/30">
+              <Badge className="mb-8 md:mb-6 bg-white/20 text-white border-white/30">
                 โครงการวิจัยและนวัตกรรมทางการพยาบาล
               </Badge>
-              <h4 className="text-4xl md:text-4xl font-bold mb-6">
+              <h4 className="text-3xl md:text-4xl font-bold mb-8 md:mb-6 leading-relaxed md:leading-normal">
                 เรียนรู้การช่วย<span className="text-red-50">ฟื้นคืนชีพขั้นพื้นฐาน</span>และการใช้งานเครื่องกระตุกไฟฟ้าหัวใจอัตโนมัติ (AED) สำหรับประชาชน
               </h4>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" asChild className="bg-white text-primary hover:bg-white/90">
-                  <Link to="/course">
-                    เริ่มต้นเรียนรู้ <ArrowRight className="w-5 h-5 ml-2" />
-                  </Link>
+              <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 justify-center">
+                <Button 
+                  size="lg" 
+                  className="bg-white text-primary hover:bg-white/90"
+                  onClick={handleStartLearning}
+                >
+                  เริ่มต้นเรียนรู้ <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <Button size="lg" variant="outline" asChild className="border-white text-black hover:bg-white/10">
                   <Link to="/articles">
@@ -244,15 +261,28 @@ const Index = () => {
                 เริ่มต้นการเรียนรู้วันนี้และเป็นส่วนหนึ่งในการสร้างสังคมที่ปลอดภัยมากขึ้น
                 ทักษะที่คุณเรียนรู้วันนี้อาจเป็นสิ่งที่ช่วยชีวิตคนที่คุณรักได้
               </p>
-              <Button size="lg" asChild className="bg-white text-primary hover:bg-white/90">
-                <Link to="/course">
-                  เริ่มต้นเรียนรู้เลย <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
+              <Button 
+                size="lg" 
+                className="bg-white text-primary hover:bg-white/90"
+                onClick={handleStartLearning}
+              >
+                เริ่มต้นเรียนรู้เลย <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
           </div>
         </section>
       </div>
+      
+      {showLogin && (
+        <SimpleLogin 
+          onLogin={(user) => {
+            login(user);
+            setShowLogin(false);
+            navigate("/course");
+          }}
+          onClose={() => setShowLogin(false)}
+        />
+      )}
     </>
   );
 };
