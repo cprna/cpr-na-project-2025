@@ -256,10 +256,9 @@ const Index = () => {
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-3xl mx-auto">
               <Heart className="w-16 h-16 mx-auto mb-6" />
-              <h2 className="text-4xl font-bold mb-6">ไม่ต้องเป็นหมอก็ช่วยชีวิตคนได้</h2>
+              <h2 className="text-4xl font-bold mb-6">คุณพร้อมจะยื่นมือช่วยชีวิตใครสักคนหรือยัง ? </h2>
               <p className="text-xl text-white/90 mb-8 leading-relaxed">
-                แค่คุณเรียนรู้วิธีช่วยฟื้นคืนชีพและใช้เครื่อง AED อย่างถูกต้อง
-                วันหนึ่งคุณอาจจะได้ช่วยใครบางคนไว้จริง ๆ
+                มาเรียนรู้ตั้งแต่วันนี้ คุณอาจกลายเป็นสิ่งสำคัญที่สุดในวินาทีชีวิตของใครบางคน หรือแม้แต่คนที่คุณรัก
               </p>
               <Button 
                 size="lg" 
