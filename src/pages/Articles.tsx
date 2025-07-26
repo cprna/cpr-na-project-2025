@@ -278,7 +278,7 @@ const Articles = () => {
       readTime: "1 นาที",
       content: <></>,
       icon: FileText,
-      imageUrl: "/src/assets/แผ่นพับ.pdf_page-0001.jpg"
+      imageUrl: "/public/แผ่นพับ.pdf_page-0001.jpg"
     },
     {
       id: "poster-aed",
@@ -289,7 +289,7 @@ const Articles = () => {
       readTime: "1 นาที",
       content: <></>,
       icon: FileText,
-      imageUrl: "/src/assets/แผ่นพับ.pdf_page-0002.jpg"
+      imageUrl: "/public/แผ่นพับ.pdf_page-0002.jpg"
     },
     {
       id: "basics",
