@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
+import FeedbackForm from "@/components/Feedback";
 
 // ===== YouTubePlayer component =====
 const YouTubePlayer = ({ youtubeId, onEnded }: { youtubeId: string, onEnded: () => void }) => {
@@ -111,7 +112,7 @@ async function fetchExamResults() {
 }
 
 const CourseFlow = () => {
-  const [currentStep, setCurrentStep] = useState<'preTest' | 'learn' | 'postTest' | 'complete'>('preTest');
+  const [currentStep, setCurrentStep] = useState<'preTest' | 'preTestResult' | 'learn' | 'postTest' | 'feedback' | 'complete' | 'showAnswers'>('preTest');
   const [preTestAnswers, setPreTestAnswers] = useState<Record<number, string>>({});
   const [postTestAnswers, setPostTestAnswers] = useState<Record<number, string>>({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -119,6 +120,7 @@ const CourseFlow = () => {
   const [currentVideo, setCurrentVideo] = useState<number | null>(1);
   const [videoEnded, setVideoEnded] = useState(false);
   const [examResults, setExamResults] = useState<any[]>([]);
+  const [wrongAnswers, setWrongAnswers] = useState<number[]>([]);
 
   const getYouTubeId = (url: string) => {
     const m = url.match(/\/embed\/([^\?&]+)/);
@@ -326,14 +328,24 @@ const CourseFlow = () => {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       if (currentStep === 'preTest') {
+        const score = calculateScore(preTestAnswers);
+        const wrongOnes = questions.reduce((acc, q, idx) => {
+          if (parseInt(preTestAnswers[idx]) !== q.correct) {
+            acc.push(idx + 1);
+          }
+          return acc;
+        }, [] as number[]);
+
+        // Save exam result first
         const ok = await saveExamResult({
           examType: "pre_test",
           answers: preTestAnswers,
           questions,
         });
+
         if (ok) {
-          setCurrentStep('learn');
-          setCurrentQuestion(0);
+          setWrongAnswers(wrongOnes);
+          setCurrentStep('preTestResult');
         }
       } else if (currentStep === 'postTest') {
         const ok = await saveExamResult({
@@ -342,7 +354,7 @@ const CourseFlow = () => {
           questions,
         });
         if (ok) {
-          setCurrentStep('complete');
+          setCurrentStep('feedback');
         }
       }
     }
@@ -388,6 +400,66 @@ const CourseFlow = () => {
     }
   };
 
+  // Pre-test Result Section
+  if (currentStep === 'preTestResult') {
+    const score = calculateScore(preTestAnswers);
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
+          <div className="container mx-auto max-w-4xl">
+            <Card className="shadow-lg">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl mb-2">ผลการทดสอบก่อนเรียน</CardTitle>
+                <div className="text-4xl font-bold text-primary my-4">
+                  {score}/{questions.length}
+                  <div className="text-base font-normal text-muted-foreground mt-1">
+                    คิดเป็น {((score / questions.length) * 100).toFixed(0)}%
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {wrongAnswers.length > 0 ? (
+                  <div className="p-4 bg-muted/30 rounded-lg">
+                    <h3 className="font-semibold mb-2">ข้อที่ควรทบทวน</h3>
+                    <div className="grid gap-2">
+                      {wrongAnswers.map((qNum) => (
+                        <div key={qNum} className="p-3 bg-background rounded border">
+                          <div className="font-medium mb-1">ข้อ {qNum}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {questions[qNum - 1].question}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
+                    <p className="text-success font-semibold text-center">
+                      🎉 ยินดีด้วย! คุณตอบถูกทุกข้อ
+                    </p>
+                  </div>
+                )}
+                <div className="text-center">
+                  <Button 
+                    className="bg-gradient-emergency text-white"
+                    onClick={() => {
+                      setCurrentStep('learn');
+                      setCurrentQuestion(0);
+                    }}
+                  >
+                    เริ่มต้นการเรียนรู้
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   // Pre-test Section
   if (currentStep === 'preTest') {
     return (
@@ -402,7 +474,10 @@ const CourseFlow = () => {
                   ขั้นตอนที่ {getStepNumber()} จาก 3
                 </div>
               </div>
-              <Progress value={getOverallProgress()} className="h-2 mb-2" />
+              <Progress 
+                value={getOverallProgress()} 
+                className={`h-2 mb-2 ${getOverallProgress() === 100 ? '[&>div]:bg-success' : '[&>div]:bg-destructive'}`}
+              />
               <div className="text-center text-sm text-muted-foreground">
                 ขั้นตอนที่ 1: ทดสอบความรู้ก่อนเรียน
               </div>
@@ -473,7 +548,10 @@ const CourseFlow = () => {
                   ขั้นตอนที่ {getStepNumber()} จาก 3
                 </div>
               </div>
-              <Progress value={getOverallProgress()} className="h-2 mb-2" />
+              <Progress 
+                value={getOverallProgress()} 
+                className={`h-2 mb-2 ${getOverallProgress() === 100 ? '[&>div]:bg-success' : '[&>div]:bg-destructive'}`}
+              />
               <div className="text-center text-sm text-muted-foreground">
                 ขั้นตอนที่ 2: เรียนรู้จากวิดีโอ
               </div>
@@ -640,7 +718,10 @@ const CourseFlow = () => {
                   ขั้นตอนที่ {getStepNumber()} จาก 3
                 </div>
               </div>
-              <Progress value={getOverallProgress()} className="h-2 mb-2" />
+              <Progress 
+                value={getOverallProgress()} 
+                className={`h-2 mb-2 ${getOverallProgress() === 100 ? '[&>div]:bg-success' : '[&>div]:bg-destructive'}`}
+              />
               <div className="text-center text-sm text-muted-foreground">
                 ขั้นตอนที่ 3: ทดสอบความรู้หลังเรียน
               </div>
@@ -691,6 +772,88 @@ const CourseFlow = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Show Answers Section
+  if (currentStep === 'showAnswers') {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
+          <div className="container mx-auto max-w-4xl">
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center justify-center gap-2 mb-4">
+                  <ClipboardList className="w-6 h-6 text-primary" />
+                  เฉลยแบบทดสอบ
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                {questions.map((q, idx) => (
+                  <div key={idx} className="p-4 bg-muted/30 rounded-lg">
+                    <h3 className="font-semibold mb-4">
+                      {idx + 1}. {q.question}
+                    </h3>
+                    <div className="grid gap-2">
+                      {q.options.map((option, optIdx) => (
+                        <div 
+                          key={optIdx} 
+                          className={`p-3 rounded border ${
+                            optIdx === q.correct 
+                              ? 'bg-success/10 border-success text-success'
+                              : 'bg-background'
+                          }`}
+                        >
+                          {optIdx === q.correct && (
+                            <CheckCircle className="w-4 h-4 inline-block mr-2 text-success" />
+                          )}
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <div className="flex justify-center pt-4">
+                  <Button 
+                    className="bg-gradient-medical text-white"
+                    onClick={() => setCurrentStep('complete')}
+                  >
+                    กลับไปหน้าสรุป
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Feedback Section
+  if (currentStep === 'feedback') {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
+          <div className="container mx-auto max-w-4xl">
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
+              </div>
+              <Progress 
+                value={90}
+                className={`h-2 mb-2 ${getOverallProgress() === 100 ? '[&>div]:bg-success' : '[&>div]:bg-destructive'}`}
+              />
+              <div className="text-center text-sm text-muted-foreground">
+                แบบสอบถามความพึงพอใจ
+              </div>
+            </div>
+            <FeedbackForm onComplete={() => setCurrentStep('complete')} />
           </div>
         </div>
       </>
@@ -749,27 +912,50 @@ const CourseFlow = () => {
                   </div>
                 )}
               </div>
-              <div className="p-6 bg-success/10 border border-success/20 rounded-lg">
-                <h3 className="text-xl font-semibold text-success mb-2">
-                  🎉 ยินดีด้วย! คุณผ่านหลักสูตรแล้ว
-                </h3>
+              <div className={`p-6 ${postTestScore >= 9 ? 'bg-success/10 border-success/20' : 'bg-destructive/10 border-destructive/20'} border rounded-lg`}>
+                {postTestScore >= 9 ? (
+                  <h3 className="text-xl font-semibold text-success mb-2">
+                    🎉 ยินดีด้วย! คุณผ่านหลักสูตรแล้ว
+                  </h3>
+                ) : (
+                  <h3 className="text-xl font-semibold text-destructive mb-2">
+                    ❌ ขออภัย คุณยังไม่ผ่านหลักสูตร
+                  </h3>
+                )}
+                <p className="text-muted-foreground mb-2">
+                  {postTestScore >= 9 
+                    ? "คุณได้เรียนรู้ทักษะการช่วยฟื้นคืนชีพและการใช้เครื่อง AED เรียบร้อยแล้ว"
+                    : "คุณควรทบทวนเนื้อหาและลองทำแบบทดสอบใหม่อีกครั้ง เพื่อให้มั่นใจว่าคุณมีความเข้าใจที่ถูกต้อง"
+                  }
+                </p>
                 <p className="text-muted-foreground mb-4">
-                  คุณได้เรียนรู้ทักษะการช่วยฟื้นคืนชีพและการใช้เครื่อง AED เรียบร้อยแล้ว
+                  ขอขอบคุณที่ให้ความร่วมมือในการเรียนรู้หลักสูตร CPR & AED
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button 
-                    className="bg-gradient-medical text-white"
-                    onClick={() => window.location.href = '/articles'}
-                  >
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    อ่านบทความเพิ่มเติม
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => window.location.href = '/'}
-                  >
-                    กลับหน้าแรก
-                  </Button>
+                  <>
+                    <Button 
+                      className="bg-gradient-medical text-white"
+                      onClick={() => setCurrentStep('showAnswers')}
+                    >
+                      <ClipboardList className="w-4 h-4 mr-2" />
+                      ดูเฉลย
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => window.location.href = '/articles'}
+                    >
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      อ่านบทความเพิ่มเติม
+                    </Button>
+                    {postTestScore >= 9 && (
+                      <Button 
+                        variant="outline"
+                        onClick={() => window.location.href = '/'}
+                      >
+                        กลับหน้าแรก
+                      </Button>
+                    )}
+                  </>
                 </div>
               </div>
             </CardContent>

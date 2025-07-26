@@ -109,10 +109,11 @@ All colors MUST be HSL.
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: var(--sidebar-border);
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--sidebar-foreground);
+    color: var(--sidebar-primary-foreground);
   }
 }

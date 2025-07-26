@@ -186,7 +186,7 @@ const Index = () => {
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold mb-4">วัตถุประสงค์ของหลักสูตร</h2>
                 <p className="text-xl text-muted-foreground">
-                  หลักสูตรนี้ออกแบบมาเพื่อให้ประชาชนทั่วไปสามารถเรียนรู้การช่วยชีวิตเบื้องต้นได้อย่างถูกต้อง
+                  หลักสูตรนี้ออกแบบมาเพื่อให้ประชาชนทั่วไปสามารถ
                 </p>
               </div>
               
@@ -196,9 +196,9 @@ const Index = () => {
                     <div className="flex items-start space-x-4">
                       <CheckCircle className="w-6 h-6 text-medical mt-1" />
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">เรียนรู้ทักษะ CPR พื้นฐาน</h3>
+                        <h3 className="text-lg font-semibold mb-2">ทักษะ CPR พื้นฐาน</h3>
                         <p className="text-muted-foreground">
-                          เพื่อให้สามารถเรียนรู้การกดหน้าอกและเป่าปากได้อย่างถูกต้อง
+                          เรียนรู้เทคนิคการกดหน้าอกและเป่าปากให้ลมหายใจอย่างถูกต้อง
                         </p>
                       </div>
                     </div>
@@ -210,9 +210,9 @@ const Index = () => {
                     <div className="flex items-start space-x-4">
                       <CheckCircle className="w-6 h-6 text-emergency mt-1" />
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">เข้าใจการใช้เครื่อง AED</h3>
+                        <h3 className="text-lg font-semibold mb-2">การใช้เครื่อง AED</h3>
                         <p className="text-muted-foreground">
-                          สามารถเข้าใจและการใช้เครื่อง AED ได้อย่างถูกวิธีและปลอดภัยในสถานการณ์จริง
+                          เข้าใจและปฏิบัติการใช้เครื่อง AED ในสถานการณ์จริง
                         </p>
                       </div>
                     </div>
@@ -224,9 +224,9 @@ const Index = () => {
                     <div className="flex items-start space-x-4">
                       <CheckCircle className="w-6 h-6 text-warning mt-1" />
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">เสริมสร้างทักษะการตัดสินใจในภาวะฉุกเฉิน</h3>
+                        <h3 className="text-lg font-semibold mb-2">การตัดสินใจฉุกเฉิน</h3>
                         <p className="text-muted-foreground">
-                          เรียนรู้แนวทางการประเมินสถานการณ์และตัดสินใจช่วยเหลือเบื้องต้นได้อย่างรวดเร็วและเหมาะสม
+                          พัฒนาความสามารถในการตัดสินใจและดำเนินการในสถานการณ์ฉุกเฉิน
                         </p>
                       </div>
                     </div>
@@ -238,9 +238,9 @@ const Index = () => {
                     <div className="flex items-start space-x-4">
                       <CheckCircle className="w-6 h-6 text-primary mt-1" />
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">เพิ่มความมั่นใจในการช่วยเหลือผู้อื่น</h3>
+                        <h3 className="text-lg font-semibold mb-2">ความมั่นใจในการช่วยเหลือ</h3>
                         <p className="text-muted-foreground">
-                          สร้างทัศนคติที่ดีและความกล้าในการช่วยเหลือผู้ที่มีภาวะหัวใจหยุดเต้น
+                          สร้างความมั่นใจในการให้ความช่วยเหลือผู้อื่นอย่างมีประสิทธิภาพ
                         </p>
                       </div>
                     </div>
@@ -256,16 +256,17 @@ const Index = () => {
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-3xl mx-auto">
               <Heart className="w-16 h-16 mx-auto mb-6" />
-              <h2 className="text-4xl font-bold mb-6">คุณพร้อมจะยื่นมือช่วยชีวิตใครสักคนหรือยัง ? </h2>
+              <h2 className="text-4xl font-bold mb-6">พร้อมที่จะช่วยชีวิตผู้อื่นแล้วหรือยัง?</h2>
               <p className="text-xl text-white/90 mb-8 leading-relaxed">
-                มาเรียนรู้ตั้งแต่วันนี้ คุณอาจกลายเป็นสิ่งสำคัญที่สุดในวินาทีชีวิตของใครบางคน หรือแม้แต่คนที่คุณรัก
+                เริ่มต้นการเรียนรู้วันนี้และเป็นส่วนหนึ่งในการสร้างสังคมที่ปลอดภัยมากขึ้น
+                ทักษะที่คุณเรียนรู้วันนี้อาจเป็นสิ่งที่ช่วยชีวิตคนที่คุณรักได้
               </p>
               <Button 
                 size="lg" 
                 className="bg-white text-primary hover:bg-white/90"
                 onClick={handleStartLearning}
               >
-                เริ่มเรียนรู้เพื่อช่วยชีวิต <ArrowRight className="w-5 h-5 ml-2" />
+                เริ่มต้นเรียนรู้เลย <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
           </div>

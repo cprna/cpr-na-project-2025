@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      feedbacks: {
+        Row: {
+          id: string
+          created_at: string
+          user_id: string
+          satisfaction: string
+          usability: string
+          comment: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          user_id: string
+          satisfaction: string
+          usability: string
+          comment?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          user_id?: string
+          satisfaction?: string
+          usability?: string
+          comment?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedbacks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
       exam_results: {
         Row: {
           answers: Json | null
