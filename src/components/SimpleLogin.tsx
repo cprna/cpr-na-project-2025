@@ -27,6 +27,24 @@ interface SimpleLoginProps {
   onClose: () => void;
 }
 
+const occupations = [
+  "นักศึกษา",
+  "ข้าราชการ",
+  "พนักงานรัฐวิสาหกิจ",
+  "พนักงานบริษัทเอกชน",
+  "ธุรกิจส่วนตัว/ค้าขาย",
+  "รับจ้างทั่วไป",
+  "แม่บ้าน/พ่อบ้าน",
+  "เกษียณ",
+  "อื่นๆ"
+];
+
+const studentDegrees = [
+  "ปริญญาตรี",
+  "ปริญญาโท",
+  "ปริญญาเอก"
+];
+
 const cprExperiences = [
   "เคยเรียนในโรงเรียน / มหาวิทยาลัย",
   "เคยอบรมจากหน่วยงานหรือหลักสูตร CPR",
@@ -41,6 +59,10 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
     age: "",
     gender: "",
     occupation: "",
+    other_occupation: "",
+    student_year: "",
+    student_degree: "",
+    university: "",
     cpr_experience: [] as string[]
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -86,7 +108,10 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
           full_name: formData.full_name,
           age: parseInt(formData.age),
           gender: formData.gender,
-          occupation: formData.occupation,
+          occupation: formData.occupation === "อื่นๆ" ? formData.other_occupation : formData.occupation,
+          student_year: formData.occupation === "นักศึกษา" ? formData.student_year : null,
+          student_degree: formData.occupation === "นักศึกษา" ? formData.student_degree : null,
+          university: formData.occupation === "นักศึกษา" ? formData.university : null,
           cpr_experience: formData.cpr_experience
         }])
         .select('id, user_id, full_name, age, gender, occupation, cpr_experience, created_at, last_login, updated_at')
@@ -184,14 +209,82 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
                 <Briefcase className="w-4 h-4" />
                 อาชีพ
               </Label>
-              <Input
-                id="occupation"
-                type="text"
-                placeholder="อาชีพของคุณ"
+              <Select 
+                onValueChange={(value) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    occupation: value,
+                    // รีเซ็ตข้อมูลนักศึกษาเมื่อเปลี่ยนอาชีพ
+                    student_year: value === "นักศึกษา" ? prev.student_year : "",
+                    student_degree: value === "นักศึกษา" ? prev.student_degree : "",
+                    university: value === "นักศึกษา" ? prev.university : "",
+                    // รีเซ็ตอาชีพอื่นๆ
+                    other_occupation: value === "อื่นๆ" ? prev.other_occupation : ""
+                  }))
+                }}
                 value={formData.occupation}
-                onChange={(e) => setFormData(prev => ({ ...prev, occupation: e.target.value }))}
-                required
-              />
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="เลือกอาชีพ" />
+                </SelectTrigger>
+                <SelectContent>
+                  {occupations.map((occ) => (
+                    <SelectItem key={occ} value={occ}>{occ}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* แสดงฟิลด์เพิ่มเติมสำหรับอาชีพอื่นๆ */}
+              {formData.occupation === "อื่นๆ" && (
+                <div className="mt-2">
+                  <Input
+                    placeholder="ระบุอาชีพ"
+                    value={formData.other_occupation}
+                    onChange={(e) => setFormData(prev => ({ ...prev, other_occupation: e.target.value }))}
+                    required
+                  />
+                </div>
+              )}
+
+              {/* แสดงฟิลด์เพิ่มเติมสำหรับนักศึกษา */}
+              {formData.occupation === "นักศึกษา" && (
+                <div className="space-y-2 mt-2">
+                  <Select
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, student_degree: value }))}
+                    value={formData.student_degree}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="ระดับการศึกษา" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {studentDegrees.map((degree) => (
+                        <SelectItem key={degree} value={degree}>{degree}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, student_year: value }))}
+                    value={formData.student_year}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="ชั้นปี" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 5, 6].map((year) => (
+                        <SelectItem key={year} value={year.toString()}>ปี {year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Input
+                    placeholder="ชื่อมหาวิทยาลัย"
+                    value={formData.university}
+                    onChange={(e) => setFormData(prev => ({ ...prev, university: e.target.value }))}
+                    required
+                  />
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
