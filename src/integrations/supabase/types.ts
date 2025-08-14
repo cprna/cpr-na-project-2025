@@ -21,6 +21,12 @@ export type Database = {
           user_id: string
           satisfaction: string
           usability: string
+          answers: Json | null
+          q1: number | null
+          q2: number | null
+          q3: number | null
+          q4: number | null
+          q5: number | null
           comment: string | null
         }
         Insert: {
@@ -29,6 +35,12 @@ export type Database = {
           user_id: string
           satisfaction: string
           usability: string
+          answers?: Json | null
+          q1?: number | null
+          q2?: number | null
+          q3?: number | null
+          q4?: number | null
+          q5?: number | null
           comment?: string | null
         }
         Update: {
@@ -37,6 +49,12 @@ export type Database = {
           user_id?: string
           satisfaction?: string
           usability?: string
+          answers?: Json | null
+          q1?: number | null
+          q2?: number | null
+          q3?: number | null
+          q4?: number | null
+          q5?: number | null
           comment?: string | null
         }
         Relationships: [
