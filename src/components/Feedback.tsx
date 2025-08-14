@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Smile, Meh, Frown, MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type FeedbackFormProps = {
@@ -12,14 +12,41 @@ type FeedbackFormProps = {
 };
 
 const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
-  const [satisfaction, setSatisfaction] = useState<"พอใจมาก" | "พอใจ" | "ไม่พอใจ" | null>(null);
-  const [usability, setUsability] = useState<"ง่าย" | "ปานกลาง" | "ยาก" | null>(null);
+  // 5 Likert questions (1-5)
+  const questionList = [
+    { key: "q1", text: "ความชัดเจนของเนื้อหา" },
+    { key: "q2", text: "ความสะดวกในการใช้งาน" },
+    { key: "q3", text: "ประสบการณ์การเรียนรู้" },
+    { key: "q4", text: "ความเหมาะสมและความน่าสนใจของเนื้อหาในสไลด์" },
+    { key: "q5", text: "ความพึงพอใจโดยรวมลักษณะของแบบทดสอบ" },
+  ] as const;
+
+  type AnswerKey = typeof questionList[number]["key"];
+
+  const [answers, setAnswers] = useState<Record<AnswerKey, string>>({
+    q1: "",
+    q2: "",
+    q3: "",
+    q4: "",
+    q5: "",
+  });
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // เรียงจาก 5 → 1 ให้ค่ามากอยู่ฝั่งซ้าย
+  const likertOptions = [
+    { value: "5", label: "พึงพอใจมากที่สุด" },
+    { value: "4", label: "พึงพอใจมาก" },
+    { value: "3", label: "พึงพอใจปานกลาง" },
+    { value: "2", label: "พึงพอใจน้อย" },
+    { value: "1", label: "พึงพอใจน้อยที่สุด" },
+  ];
+
   const handleSubmit = async () => {
-    if (!satisfaction || !usability) {
-      alert("กรุณาเลือกระดับความพึงพอใจและความง่ายในการใช้งาน");
+    // Validate all five questions answered
+    const allAnswered = Object.values(answers).every((v) => v !== "");
+    if (!allAnswered) {
+      alert("กรุณาตอบทุกข้อในแบบประเมินความพึงพอใจ");
       return;
     }
 
@@ -32,7 +59,7 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
       return;
     }
 
-    const userId = profileUser.user_id || profileUser.id;
+  const userId = profileUser.user_id || profileUser.id;
     
     try {
       // Verify if the user exists in the profiles table and get their profile id
@@ -48,22 +75,33 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
         return;
       }
 
-      const { error } = await supabase.from("feedbacks").insert([
-        {
-          user_id: userProfile.id,
-          satisfaction,
-          usability,
-          comment: comment || null,
-          created_at: new Date().toISOString(),
-        },
-      ]);
+      // Map to DB columns
+      // - satisfaction: คะแนนโดยรวม (q5) ยังเก็บไว้เพื่อความเข้ากันได้เดิม
+      // - usability: คะแนนความสะดวกในการใช้งาน (q2) ยังเก็บไว้เดิม
+      // - q1..q5: เก็บคะแนนทั้ง 5 ข้อเป็นตัวเลข
+      // - answers (jsonb): เก็บวัตถุคำตอบทั้งหมด + หมายเหตุ
+      const payload = {
+        user_id: userProfile.id,
+        satisfaction: answers.q5, // string "1"-"5" (เดิม)
+        usability: answers.q2,    // string "1"-"5" (เดิม)
+        q1: Number(answers.q1),
+        q2: Number(answers.q2),
+        q3: Number(answers.q3),
+        q4: Number(answers.q4),
+        q5: Number(answers.q5),
+        answers: { ...answers, note: comment || undefined },
+        comment: JSON.stringify({ answers, note: comment || undefined }),
+        created_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase.from("feedbacks").insert([payload]);
 
       if (error) throw error;
 
       onComplete();
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      alert("เกิดข้อผิดพลาดในการบันทึกแบบสอบถาม กรุณาลองใหม่อีกครั้ง");
+  alert("เกิดข้อผิดพลาดในการบันทึกแบบสอบถาม กรุณาลองใหม่อีกครั้ง");
     } finally {
       setIsSubmitting(false);
     }
@@ -73,83 +111,41 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl text-center">แบบสอบถามความพึงพอใจ</CardTitle>
-        <CardDescription className="text-center">
-          กรุณาให้ความคิดเห็นเพื่อช่วยเราพัฒนาบทเรียนให้ดียิ่งขึ้น
+        <CardDescription className="text-center space-y-1">
+          <p className="text-xs text-muted-foreground">
+            ระดับคะแนน: 1 = พึงพอใจน้อยที่สุด · 2 = พึงพอใจน้อย · 3 = พึงพอใจปานกลาง · 4 = พึงพอใจมาก · 5 = พึงพอใจมากที่สุด
+          </p>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-3">
-          <Label>ระดับความพึงพอใจต่อเนื้อหาบทเรียน</Label>
-          <RadioGroup
-            className="grid grid-cols-3 gap-4"
-            value={satisfaction || ""}
-            onValueChange={(value) => setSatisfaction(value as typeof satisfaction)}
-          >
-            <Label
-              className={`flex flex-col items-center justify-between rounded-md border-2 p-4 hover:bg-accent cursor-pointer
-                ${satisfaction === "พอใจมาก" ? "border-primary" : "border-muted"}
-              `}
-            >
-              <RadioGroupItem value="พอใจมาก" className="sr-only" />
-              <Smile className="w-6 h-6 mb-2 text-success" />
-              <span className="text-sm font-medium">พอใจมาก</span>
-            </Label>
-            <Label
-              className={`flex flex-col items-center justify-between rounded-md border-2 p-4 hover:bg-accent cursor-pointer
-                ${satisfaction === "พอใจ" ? "border-primary" : "border-muted"}
-              `}
-            >
-              <RadioGroupItem value="พอใจ" className="sr-only" />
-              <Meh className="w-6 h-6 mb-2 text-warning" />
-              <span className="text-sm font-medium">พอใจ</span>
-            </Label>
-            <Label
-              className={`flex flex-col items-center justify-between rounded-md border-2 p-4 hover:bg-accent cursor-pointer
-                ${satisfaction === "ไม่พอใจ" ? "border-primary" : "border-muted"}
-              `}
-            >
-              <RadioGroupItem value="ไม่พอใจ" className="sr-only" />
-              <Frown className="w-6 h-6 mb-2 text-destructive" />
-              <span className="text-sm font-medium">ไม่พอใจ</span>
-            </Label>
-          </RadioGroup>
-        </div>
-
-        <div className="space-y-3">
-          <Label>ความง่ายในการใช้งานเว็บไซต์</Label>
-          <RadioGroup
-            className="grid grid-cols-3 gap-4"
-            value={usability || ""}
-            onValueChange={(value) => setUsability(value as typeof usability)}
-          >
-            <Label
-              className={`flex flex-col items-center justify-between rounded-md border-2 p-4 hover:bg-accent cursor-pointer
-                ${usability === "ง่าย" ? "border-primary" : "border-muted"}
-              `}
-            >
-              <RadioGroupItem value="ง่าย" className="sr-only" />
-              <Smile className="w-6 h-6 mb-2 text-success" />
-              <span className="text-sm font-medium">ง่าย</span>
-            </Label>
-            <Label
-              className={`flex flex-col items-center justify-between rounded-md border-2 p-4 hover:bg-accent cursor-pointer
-                ${usability === "ปานกลาง" ? "border-primary" : "border-muted"}
-              `}
-            >
-              <RadioGroupItem value="ปานกลาง" className="sr-only" />
-              <Meh className="w-6 h-6 mb-2 text-warning" />
-              <span className="text-sm font-medium">ปานกลาง</span>
-            </Label>
-            <Label
-              className={`flex flex-col items-center justify-between rounded-md border-2 p-4 hover:bg-accent cursor-pointer
-                ${usability === "ยาก" ? "border-primary" : "border-muted"}
-              `}
-            >
-              <RadioGroupItem value="ยาก" className="sr-only" />
-              <Frown className="w-6 h-6 mb-2 text-destructive" />
-              <span className="text-sm font-medium">ยาก</span>
-            </Label>
-          </RadioGroup>
+        {/* Likert questions */}
+        <div className="space-y-6">
+          {questionList.map((q, idx) => (
+            <div key={q.key} className="space-y-3 pt-4 first:pt-0 border-t first:border-t-0">
+              <Label className="text-base font-medium">
+                {idx + 1}. {q.text}
+              </Label>
+              <RadioGroup
+                className="grid grid-cols-2 sm:grid-cols-5 gap-2"
+                value={answers[q.key]}
+                onValueChange={(value) => setAnswers((prev) => ({ ...prev, [q.key]: value }))}
+              >
+                {likertOptions.map((opt) => (
+                  <div key={`${q.key}-${opt.value}`} className="relative">
+                    <RadioGroupItem id={`${q.key}-${opt.value}`} value={opt.value} className="sr-only peer" />
+                    <Label
+                      htmlFor={`${q.key}-${opt.value}`}
+                      className="block cursor-pointer select-none rounded-md border bg-background p-2 text-center text-xs sm:text-sm transition-colors hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                      aria-label={opt.label}
+                      title={opt.label}
+                    >
+                      <span className="block text-base sm:text-lg font-semibold">{opt.value}</span>
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          ))}
         </div>
 
         <div className="space-y-3">
@@ -168,7 +164,7 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
         <Button 
           className="w-full"
           onClick={handleSubmit}
-          disabled={isSubmitting || !satisfaction || !usability}
+          disabled={isSubmitting || !Object.values(answers).every((v) => v !== "")}
         >
           <Send className="w-4 h-4 mr-2" />
           {isSubmitting ? "กำลังบันทึก..." : "ส่งแบบสอบถาม"}
