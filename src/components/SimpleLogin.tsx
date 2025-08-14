@@ -20,6 +20,7 @@ interface ProfileUser {
   created_at?: string;
   last_login?: string;
   updated_at?: string;
+  real_cpr_experience_1y?: string;
 }
 
 interface SimpleLoginProps {
@@ -49,7 +50,8 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
     student_year: "",
     student_degree: "",
     university: "",
-    cpr_experience: [] as string[]
+  cpr_experience: [] as string[],
+  real_cpr_experience_1y: ""
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -71,11 +73,12 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
       !formData.age ||
       !formData.gender ||
       !formData.occupation ||
-      formData.cpr_experience.length === 0
+      formData.cpr_experience.length === 0 ||
+      !formData.real_cpr_experience_1y
     ) {
       toast({
         title: "กรุณากรอกข้อมูลให้ครบถ้วน",
-        description: "โปรดใส่ชื่อ อายุ เพศ อาชีพ และเลือกประสบการณ์ CPR ของคุณ",
+        description: "โปรดใส่ชื่อ อายุ เพศ อาชีพ เลือกประสบการณ์ CPR ในรอบ 6 เดือน และระบุว่ามีประสบการณ์จริงในรอบ 1 ปีหรือไม่",
         variant: "destructive"
       });
       return;
@@ -96,21 +99,22 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
           student_year: formData.occupation === "นักศึกษา" ? formData.student_year : null,
           student_degree: formData.occupation === "นักศึกษา" ? formData.student_degree : null,
           university: formData.occupation === "นักศึกษา" ? formData.university : null,
-          cpr_experience: formData.cpr_experience
+          cpr_experience: formData.cpr_experience,
+          real_cpr_experience_1y: formData.real_cpr_experience_1y === "เคย"
         }])
-        .select("id, user_id, full_name, age, gender, occupation, cpr_experience, created_at, last_login, updated_at")
+        .select("id, user_id, full_name, age, gender, occupation, cpr_experience, student_year, student_degree, university, real_cpr_experience_1y, created_at, last_login, updated_at")
         .single();
 
       if (error) throw error;
 
-      localStorage.setItem("profile_user", JSON.stringify(data));
+  localStorage.setItem("profile_user", JSON.stringify(data));
 
       toast({
         title: "เข้าสู่ระบบสำเร็จ",
         description: `ยินดีต้อนรับ ${formData.full_name}`
       });
 
-      onLogin(data);
+  onLogin(data as unknown as ProfileUser);
       onClose();
     } catch (error) {
       toast({
@@ -274,7 +278,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
             {/* CPR experience */}
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
-                ประสบการณ์เกี่ยวกับการทำ CPR
+                ประสบการณ์เกี่ยวกับการทำ CPR (ในรอบ 6 เดือนที่ผ่านมา)
               </Label>
               <div className="space-y-2 ml-2">
                 {cprExperiences.map((exp) => (
@@ -293,6 +297,25 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
               <div className="text-xs text-muted-foreground ml-2">
                 (สามารถเลือกได้มากกว่า 1 ข้อ)
               </div>
+            </div>
+
+            {/* Real CPR experience in last 1 year */}
+            <div className="space-y-2">
+              <Label>
+                ท่านเคยมีประสบการณ์จริงในการทำ CPR ในรอบ 1 ปี ที่ผ่านมาหรือไม่
+              </Label>
+              <Select
+                onValueChange={(value) => setFormData(prev => ({ ...prev, real_cpr_experience_1y: value }))}
+                value={formData.real_cpr_experience_1y}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="เลือกคำตอบ" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="เคย">เคย</SelectItem>
+                  <SelectItem value="ไม่เคย">ไม่เคย</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex gap-3 pt-4">
