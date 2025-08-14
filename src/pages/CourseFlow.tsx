@@ -16,6 +16,8 @@ import {
   BookOpen
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import FeedbackForm from "@/components/Feedback";
 
@@ -112,6 +114,7 @@ async function fetchExamResults() {
 }
 
 const CourseFlow = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<'preTest' | 'preTestResult' | 'learn' | 'postTest' | 'feedback' | 'complete' | 'showAnswers'>('preTest');
   const [preTestAnswers, setPreTestAnswers] = useState<Record<number, string>>({});
   const [postTestAnswers, setPostTestAnswers] = useState<Record<number, string>>({});
@@ -121,6 +124,10 @@ const CourseFlow = () => {
   const [videoEnded, setVideoEnded] = useState(false);
   const [examResults, setExamResults] = useState<any[]>([]);
   const [wrongAnswers, setWrongAnswers] = useState<number[]>([]);
+  const [timeLeft, setTimeLeft] = useState<number>(15 * 60);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+  const [showPreTestIntro, setShowPreTestIntro] = useState<boolean>(true);
+  const [showPostTestIntro, setShowPostTestIntro] = useState<boolean>(false);
 
   const getYouTubeId = (url: string) => {
     const m = url.match(/\/embed\/([^\?&]+)/);
@@ -138,6 +145,76 @@ const CourseFlow = () => {
       });
     }
   }, [currentStep]);
+
+  // Reset and show intro when entering test steps
+  useEffect(() => {
+    if (currentStep === 'preTest') {
+      setShowPreTestIntro(true);
+      setIsTimerRunning(false);
+      setTimeLeft(15 * 60);
+      setCurrentQuestion(0);
+    } else if (currentStep === 'postTest') {
+      setShowPostTestIntro(true);
+      setIsTimerRunning(false);
+      setTimeLeft(15 * 60);
+      setCurrentQuestion(0);
+    } else {
+      setIsTimerRunning(false);
+    }
+  }, [currentStep]);
+
+  // Countdown ticking
+  useEffect(() => {
+    if (!isTimerRunning) return;
+    const id = setInterval(() => {
+      setTimeLeft((t) => (t > 0 ? t - 1 : 0));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isTimerRunning]);
+
+  // Auto-submit when time runs out
+  useEffect(() => {
+    if (timeLeft === 0 && isTimerRunning) {
+      setIsTimerRunning(false);
+      autoSubmitCurrentTest();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft]);
+
+  const formatTime = (sec: number) => {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = Math.floor(sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
+  const startPreTest = () => {
+    setShowPreTestIntro(false);
+    setIsTimerRunning(true);
+  };
+
+  const startPostTest = () => {
+    setShowPostTestIntro(false);
+    setIsTimerRunning(true);
+    setCurrentQuestion(0);
+  };
+
+  const autoSubmitCurrentTest = async () => {
+    if (currentStep === 'preTest') {
+      const score = calculateScore(preTestAnswers);
+      const wrongOnes = questions.reduce((acc, q, idx) => {
+        if (parseInt(preTestAnswers[idx]) !== q.correct) acc.push(idx + 1);
+        return acc;
+      }, [] as number[]);
+      const ok = await saveExamResult({ examType: 'pre_test', answers: preTestAnswers, questions });
+      if (ok) {
+        setWrongAnswers(wrongOnes);
+        setCurrentStep('preTestResult');
+      }
+    } else if (currentStep === 'postTest') {
+      const ok = await saveExamResult({ examType: 'post_test', answers: postTestAnswers, questions });
+      if (ok) setCurrentStep('feedback');
+    }
+  };
 
   const questions = [
     {
@@ -335,8 +412,8 @@ const CourseFlow = () => {
           }
           return acc;
         }, [] as number[]);
-
-        // Save exam result first
+  // Stop timer and save exam result
+  setIsTimerRunning(false);
         const ok = await saveExamResult({
           examType: "pre_test",
           answers: preTestAnswers,
@@ -348,6 +425,7 @@ const CourseFlow = () => {
           setCurrentStep('preTestResult');
         }
       } else if (currentStep === 'postTest') {
+        setIsTimerRunning(false);
         const ok = await saveExamResult({
           examType: "post_test",
           answers: postTestAnswers,
@@ -419,27 +497,9 @@ const CourseFlow = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                {wrongAnswers.length > 0 ? (
-                  <div className="p-4 bg-muted/30 rounded-lg">
-                    <h3 className="font-semibold mb-2">ข้อที่ควรทบทวน</h3>
-                    <div className="grid gap-2">
-                      {wrongAnswers.map((qNum) => (
-                        <div key={qNum} className="p-3 bg-background rounded border">
-                          <div className="font-medium mb-1">ข้อ {qNum}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {questions[qNum - 1].question}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
-                    <p className="text-success font-semibold text-center">
-                      🎉 ยินดีด้วย! คุณตอบถูกทุกข้อ
-                    </p>
-                  </div>
-                )}
+                <div className="text-center text-muted-foreground">
+                  คะแนนแบบทดสอบก่อนเรียนของคุณคือ {score} จาก {questions.length} ข้อ
+                </div>
                 <div className="text-center">
                   <Button 
                     className="bg-gradient-emergency text-white"
@@ -470,8 +530,13 @@ const CourseFlow = () => {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
-                <div className="text-sm text-muted-foreground">
-                  ขั้นตอนที่ {getStepNumber()} จาก 3
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-muted-foreground">
+                    ขั้นตอนที่ {getStepNumber()} จาก 3
+                  </div>
+                  <div className={`text-sm font-semibold px-3 py-1 rounded border ${timeLeft <= 60 ? 'text-destructive border-destructive' : 'text-primary border-primary'}`}>
+                    เวลา: {formatTime(timeLeft)}
+                  </div>
                 </div>
               </div>
               <Progress 
@@ -499,6 +564,11 @@ const CourseFlow = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {!isTimerRunning && (
+                  <div className="p-4 border rounded bg-muted/20 text-sm">
+                    เริ่มทำข้อสอบเมื่อพร้อม จะมีเวลาทั้งหมด 15 นาที ระบบจะบันทึกคำตอบที่ทำไว้และส่งอัตโนมัติเมื่อหมดเวลา
+                  </div>
+                )}
                 <RadioGroup
                   value={preTestAnswers[currentQuestion] || ""}
                   onValueChange={handlePreTestAnswer}
@@ -519,7 +589,7 @@ const CourseFlow = () => {
                 <div className="flex justify-end pt-4">
                   <Button
                     onClick={nextQuestion}
-                    disabled={!preTestAnswers[currentQuestion]}
+                    disabled={!preTestAnswers[currentQuestion] || !isTimerRunning}
                     className="bg-gradient-emergency text-white"
                   >
                     {currentQuestion === questions.length - 1 ? 'เริ่มเรียน' : 'ถัดไป'}
@@ -530,6 +600,22 @@ const CourseFlow = () => {
             </Card>
           </div>
         </div>
+
+        {/* Intro Dialog for Pre-test */}
+        <Dialog open={showPreTestIntro} onOpenChange={setShowPreTestIntro}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>เริ่มทำแบบทดสอบก่อนเรียน</DialogTitle>
+              <DialogDescription>
+                เวลาทั้งหมด 15 นาที กรุณาตอบทุกข้อให้ครบ ระบบจะส่งคำตอบอัตโนมัติเมื่อหมดเวลา คุณสามารถเริ่มทำเมื่อพร้อม
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowPreTestIntro(false)}>ปิด</Button>
+              <Button className="bg-gradient-emergency text-white" onClick={startPreTest}>เริ่มทำข้อสอบ</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </>
     );
   }
@@ -599,7 +685,7 @@ const CourseFlow = () => {
                   </div>
                   {progressPercentage === 100 && (
                     <div className="mt-4 p-4 bg-success/10 border border-success/20 rounded-lg">
-                      <p className="text-success font-semibold mb-2">ยินดีด้วย! คุณดูวิดีโอครบทุกคลิปแล้ว</p>
+                      <p className="text-success font-semibold mb-2">🎉 ยินดีด้วย! คุณดูวิดีโอครบทุกตอนแล้ว</p>
                       <Button 
                         className="bg-gradient-medical text-white"
                         onClick={() => setCurrentStep('postTest')}
@@ -714,8 +800,13 @@ const CourseFlow = () => {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
-                <div className="text-sm text-muted-foreground">
-                  ขั้นตอนที่ {getStepNumber()} จาก 3
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-muted-foreground">
+                    ขั้นตอนที่ {getStepNumber()} จาก 3
+                  </div>
+                  <div className={`text-sm font-semibold px-3 py-1 rounded border ${timeLeft <= 60 ? 'text-destructive border-destructive' : 'text-primary border-primary'}`}>
+                    เวลา: {formatTime(timeLeft)}
+                  </div>
                 </div>
               </div>
               <Progress 
@@ -763,7 +854,7 @@ const CourseFlow = () => {
                 <div className="flex justify-end pt-4">
                   <Button
                     onClick={nextQuestion}
-                    disabled={!postTestAnswers[currentQuestion]}
+                    disabled={!postTestAnswers[currentQuestion] || !isTimerRunning}
                     className="bg-gradient-emergency text-white"
                   >
                     {currentQuestion === questions.length - 1 ? 'เสร็จสิ้น' : 'ถัดไป'}
@@ -774,6 +865,22 @@ const CourseFlow = () => {
             </Card>
           </div>
         </div>
+
+        {/* Intro Dialog for Post-test */}
+        <Dialog open={showPostTestIntro} onOpenChange={setShowPostTestIntro}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>เริ่มทำแบบทดสอบหลังเรียน</DialogTitle>
+              <DialogDescription>
+                เวลาทั้งหมด 15 นาที กรุณาตอบทุกข้อให้ครบ ระบบจะส่งคำตอบอัตโนมัติเมื่อหมดเวลา คุณสามารถเริ่มทำเมื่อพร้อม
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowPostTestIntro(false)}>ปิด</Button>
+              <Button className="bg-gradient-emergency text-white" onClick={startPostTest}>เริ่มทำข้อสอบ</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </>
     );
   }
@@ -915,11 +1022,11 @@ const CourseFlow = () => {
               <div className={`p-6 ${postTestScore >= 9 ? 'bg-success/10 border-success/20' : 'bg-destructive/10 border-destructive/20'} border rounded-lg`}>
                 {postTestScore >= 9 ? (
                   <h3 className="text-xl font-semibold text-success mb-2">
-                     ยินดีด้วย! คุณผ่านหลักสูตรแล้ว
+                    🎉 ยินดีด้วย! คุณผ่านหลักสูตรแล้ว
                   </h3>
                 ) : (
                   <h3 className="text-xl font-semibold text-destructive mb-2">
-                     ขออภัย คุณยังไม่ผ่านหลักสูตร
+                    ❌ ขออภัย คุณยังไม่ผ่านหลักสูตร
                   </h3>
                 )}
                 <p className="text-muted-foreground mb-2">
@@ -942,7 +1049,7 @@ const CourseFlow = () => {
                     </Button>
                     <Button 
                       variant="outline"
-                      onClick={() => window.location.href = '/articles'}
+                      onClick={() => navigate('/articles')}
                     >
                       <BookOpen className="w-4 h-4 mr-2" />
                       อ่านบทความเพิ่มเติม
@@ -950,7 +1057,7 @@ const CourseFlow = () => {
                     {postTestScore >= 9 && (
                       <Button 
                         variant="outline"
-                        onClick={() => window.location.href = '/'}
+                        onClick={() => navigate('/')}
                       >
                         กลับหน้าแรก
                       </Button>
