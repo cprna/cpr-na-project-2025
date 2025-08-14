@@ -146,6 +146,11 @@ export type Database = {
           id: string
           login_date: string | null
           occupation: string | null
+          cpr_experience: string[] | null
+          student_year: string | null
+          student_degree: string | null
+          university: string | null
+          real_cpr_experience_1y: boolean | null
           updated_at: string
           user_id: string
         }
@@ -157,6 +162,11 @@ export type Database = {
           id?: string
           login_date?: string | null
           occupation?: string | null
+          cpr_experience?: string[] | null
+          student_year?: string | null
+          student_degree?: string | null
+          university?: string | null
+          real_cpr_experience_1y?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -168,6 +178,11 @@ export type Database = {
           id?: string
           login_date?: string | null
           occupation?: string | null
+          cpr_experience?: string[] | null
+          student_year?: string | null
+          student_degree?: string | null
+          university?: string | null
+          real_cpr_experience_1y?: boolean | null
           updated_at?: string
           user_id?: string
         }
