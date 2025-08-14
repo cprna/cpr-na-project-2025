@@ -115,7 +115,7 @@ async function fetchExamResults() {
 
 const CourseFlow = () => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<'preTest' | 'preTestResult' | 'learn' | 'postTest' | 'feedback' | 'complete' | 'showAnswers'>('preTest');
+  const [currentStep, setCurrentStep] = useState<'preTest' | 'preTestResult' | 'introDocs' | 'learn' | 'postTest' | 'feedback' | 'complete' | 'showAnswers'>('preTest');
   const [preTestAnswers, setPreTestAnswers] = useState<Record<number, string>>({});
   const [postTestAnswers, setPostTestAnswers] = useState<Record<number, string>>({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -128,6 +128,7 @@ const CourseFlow = () => {
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [showPreTestIntro, setShowPreTestIntro] = useState<boolean>(true);
   const [showPostTestIntro, setShowPostTestIntro] = useState<boolean>(false);
+  const [showDoc, setShowDoc] = useState<{ href: string; title: string } | null>(null);
 
   const getYouTubeId = (url: string) => {
     const m = url.match(/\/embed\/([^\?&]+)/);
@@ -461,18 +462,20 @@ const CourseFlow = () => {
   const getStepNumber = () => {
     switch (currentStep) {
       case 'preTest': return 1;
-      case 'learn': return 2;
-      case 'postTest': return 3;
-      case 'complete': return 4;
+      case 'introDocs': return 2;
+      case 'learn': return 3;
+      case 'postTest': return 4;
+      case 'complete': return 5;
       default: return 1;
     }
   };
 
   const getOverallProgress = () => {
     switch (currentStep) {
-      case 'preTest': return 25;
-      case 'learn': return 50;
-      case 'postTest': return 75;
+      case 'preTest': return 20;
+      case 'introDocs': return 40;
+      case 'learn': return 60;
+      case 'postTest': return 80;
       case 'complete': return 100;
       default: return 0;
     }
@@ -504,11 +507,11 @@ const CourseFlow = () => {
                   <Button 
                     className="bg-gradient-emergency text-white"
                     onClick={() => {
-                      setCurrentStep('learn');
+                      setCurrentStep('introDocs');
                       setCurrentQuestion(0);
                     }}
                   >
-                    เริ่มต้นการเรียนรู้
+                    ไปยังคลิปแนะนำและเอกสารประกอบ
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -516,6 +519,99 @@ const CourseFlow = () => {
             </Card>
           </div>
         </div>
+      </>
+    );
+  }
+  // Intro video + documents Section
+  if (currentStep === 'introDocs') {
+    const introVideoUrl = "https://www.youtube.com/embed/3xMfI-8c164?si=HNlOKSc2HDxLcnpy";
+    const introVideoId = getYouTubeId(introVideoUrl);
+    const documents = [
+      {
+        title: "เอกสารประกอบ CPR & AED",
+        href: "/Untitled design.pdf#page=1",
+        description: "สรุปขั้นตอนหลักและหลักการสำคัญ (ไฟล์ PDF)",
+      }
+    ];
+  return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
+                <div className="text-sm text-muted-foreground">ขั้นตอนที่ {getStepNumber()} จาก 5</div>
+              </div>
+              <Progress 
+                value={getOverallProgress()} 
+                className={`h-2 mb-2 ${getOverallProgress() === 100 ? '[&>div]:bg-success' : '[&>div]:bg-destructive'}`}
+              />
+              <div className="text-center text-sm text-muted-foreground">
+                คลิปแนะนำ + อ่านเอกสารประกอบควบคู่กับเสียงวิดีโอ
+              </div>
+            </div>
+            <Card className="shadow-lg mb-6">
+              <CardHeader>
+                <CardTitle className="text-lg">คลิปแนะนำก่อนเริ่มเรียน</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <YouTubePlayer youtubeId={introVideoId} onEnded={() => {}} />
+                <p className="text-sm text-muted-foreground">เปิดดูคลิปนี้ แล้วเลื่อนลงเพื่อเปิดเอกสารอ่านควบคู่กัน</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-lg">เอกสารประกอบการเรียน</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {documents.map((doc, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setShowDoc({ href: doc.href, title: doc.title })}
+                      className="text-left w-full border rounded-lg p-4 hover:bg-muted/40 transition focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <div className="font-semibold mb-1">{doc.title}</div>
+                      <div className="text-sm text-muted-foreground">{doc.description}</div>
+                      <div className="mt-2 text-xs text-primary">คลิกเพื่อแสดงเอกสารแบบ Overlay</div>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex justify-end pt-6">
+                  <Button className="bg-gradient-medical text-white" onClick={() => setCurrentStep('learn')}>
+                    ไปหน้าวิดีโอการเรียนรู้
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Overlay Document Viewer */}
+        <Dialog open={!!showDoc} onOpenChange={(o) => { if (!o) setShowDoc(null); }}>
+          <DialogContent className="max-w-5xl w-full">
+            <DialogHeader>
+              <DialogTitle>{showDoc?.title}</DialogTitle>
+            </DialogHeader>
+            {showDoc && (
+              showDoc.href.toLowerCase().includes('.pdf') ? (
+                <iframe src={encodeURI(showDoc.href)} className="w-full h-[70vh] rounded" title={showDoc.title} />
+              ) : (
+                <img src={encodeURI(showDoc.href)} alt={showDoc.title} className="w-full max-h-[70vh] object-contain rounded" />
+              )
+            )}
+            <div className="flex justify-end pt-2">
+              {showDoc && (
+                <a href={encodeURI(showDoc.href)} target="_blank" rel="noopener noreferrer" className="text-sm text-primary underline">
+                  เปิดในแท็บใหม่
+                </a>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </>
     );
   }
@@ -532,7 +628,7 @@ const CourseFlow = () => {
                 <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
                 <div className="flex items-center gap-4">
                   <div className="text-sm text-muted-foreground">
-                    ขั้นตอนที่ {getStepNumber()} จาก 3
+                    ขั้นตอนที่ {getStepNumber()} จาก 5
                   </div>
                   <div className={`text-sm font-semibold px-3 py-1 rounded border ${timeLeft <= 60 ? 'text-destructive border-destructive' : 'text-primary border-primary'}`}>
                     เวลา: {formatTime(timeLeft)}
@@ -631,7 +727,7 @@ const CourseFlow = () => {
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
                 <div className="text-sm text-muted-foreground">
-                  ขั้นตอนที่ {getStepNumber()} จาก 3
+                  ขั้นตอนที่ {getStepNumber()} จาก 5
                 </div>
               </div>
               <Progress 
@@ -802,7 +898,7 @@ const CourseFlow = () => {
                 <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
                 <div className="flex items-center gap-4">
                   <div className="text-sm text-muted-foreground">
-                    ขั้นตอนที่ {getStepNumber()} จาก 3
+                    ขั้นตอนที่ {getStepNumber()} จาก 5
                   </div>
                   <div className={`text-sm font-semibold px-3 py-1 rounded border ${timeLeft <= 60 ? 'text-destructive border-destructive' : 'text-primary border-primary'}`}>
                     เวลา: {formatTime(timeLeft)}
