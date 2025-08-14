@@ -14,7 +14,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import heroImage from "@/assets/IMG_0110.jpg";
+import heroImage from "@/assets/IMG_7142.JPG";
 import { useState } from "react";
 import { useSimpleAuth } from "@/hooks/useSimpleAuth";
 import SimpleLogin from "@/components/SimpleLogin";
