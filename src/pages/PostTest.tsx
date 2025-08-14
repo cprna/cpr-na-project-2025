@@ -292,7 +292,7 @@ const PostTest = () => {
                   <div className="bg-gradient-medical/10 p-6 rounded-lg border border-medical/20">
                     <Award className="w-12 h-12 mx-auto mb-4 text-medical" />
                     <h3 className="text-xl font-bold text-medical mb-2">
-                      🎉 ยินดีด้วย!
+                      ยินดีด้วย!
                     </h3>
                     <p className="text-medical">
                       คุณผ่านการอบรมการช่วยฟื้นคืนชีพและการใช้ AED เรียบร้อยแล้ว
