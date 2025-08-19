@@ -529,7 +529,7 @@ const CourseFlow = () => {
     const documents = [
       {
         title: "เอกสารประกอบ CPR & AED",
-        href: "/Untitled design.pdf#page=1",
+        href: "/Untitled%20design.pdf#page=1",
         description: "สรุปขั้นตอนหลักและหลักการสำคัญ (ไฟล์ PDF)",
       }
     ];
