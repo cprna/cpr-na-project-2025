@@ -1,21 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, User, FileText, Heart, Zap, AlertTriangle, BookOpen, Activity, Target, PlayCircle } from "lucide-react";
+import { Clock, FileText, Zap, AlertTriangle, BookOpen, Activity, Target } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LucideIcon } from "lucide-react";
 
 type Article = {
   id: string;
   title: string;
   type: 'article' | 'poster';
   category: string;
-  author: string;
-  readTime: string;
-  icon: LucideIcon;
   content: React.ReactNode;
   imageUrl?: string;
 };
@@ -270,13 +264,37 @@ const AEDContent = () => (
 const Articles = () => {
   const articles: Article[] = [
     {
+      id: "pdf-docs",
+      title: "เอกสารประกอบ CPR & AED (PDF)",
+      type: "article",
+      category: "เอกสาร",
+      content: (
+        <div className="space-y-4">
+          <div className="h-[70vh]">
+            <iframe
+              src={encodeURI("/คู่มือ การช่วยฟื้นคืนชีพพื้นฐานและการใช้เครื่องเออีดี 2.pdf#page=1")}
+              className="w-full h-full rounded"
+              title="เอกสารประกอบ CPR & AED"
+            />
+          </div>
+          <div className="flex justify-end">
+            <a
+              href={encodeURI("/คู่มือ การช่วยฟื้นคืนชีพพื้นฐานและการใช้เครื่องเออีดี 2.pdf")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              เปิดในแท็บใหม่
+            </a>
+          </div>
+        </div>
+      ),
+    },
+    {
       id: "video-bls",
       title: "การช่วยชีวิตขั้นพื้นฐาน (BLS) - วิดีโอแนะนำ",
       type: "article",
       category: "วิดีโอ",
-      author: "ทีมวิชาการ",
-      readTime: "6 นาที",
-      icon: PlayCircle,
       content: (
         <div className="space-y-4">
           <div className="aspect-video rounded-lg overflow-hidden bg-black">
@@ -300,9 +318,6 @@ const Articles = () => {
       title: "การทำ CPR และการใช้ AED - วิดีโอสอน",
       type: "article",
       category: "วิดีโอ",
-      author: "ทีมวิชาการ",
-      readTime: "7 นาที",
-      icon: PlayCircle,
       content: (
         <div className="space-y-4">
           <div className="aspect-video rounded-lg overflow-hidden bg-black">
@@ -322,65 +337,35 @@ const Articles = () => {
       ),
     },
     {
-      id: "poster-drcab",
-      title: "ขั้นตอน D-R-C-A-B ฉบับโปสเตอร์",
-      type: "poster",
-      category: "โปสเตอร์",
-      author: "ทีมวิชาการ",
-      readTime: "1 นาที",
-      content: <></>,
-      icon: FileText,
-  imageUrl: "/poster1.pdf_page-0001.jpg"
-    },
-    {
-      id: "poster-aed",
-      title: "วิธีใช้เครื่อง AED ฉบับโปสเตอร์",
-      type: "poster",
-      category: "โปสเตอร์",
-      author: "ทีมวิชาการ",
-      readTime: "1 นาที",
-      content: <></>,
-      icon: FileText,
-  imageUrl: "/poster2.pdf_page-0002.jpg"
-    },
-    {
       id: "basics",
       title: "ความรู้พื้นฐาน CPR",
       type: "article",
       category: "ความรู้พื้นฐาน",
-      author: "ทีมวิชาการ",
-      readTime: "5 นาที",
       content: <BasicsContent />,
-      icon: BookOpen
+      
     },
     {
       id: "drcab",
       title: "ขั้นตอน D-R-C-A-B",
       type: "article",
       category: "วิธีการ",
-      author: "ทีมแพทย์ฉุกเฉิน",
-      readTime: "7 นาที",
       content: <DRCABContent />,
-      icon: Activity
+      
     },
     {
       id: "aed",
       title: "การใช้เครื่อง AED",
       type: "article",
       category: "อุปกรณ์",
-      author: "ทีมแพทย์ฉุกเฉิน",
-      readTime: "5 นาที",
       content: <AEDContent />,
-      icon: Zap
+      
     },
     {
       id: "equipment",
       title: "อุปกรณ์ที่จำเป็นสำหรับการทำ CPR",
       type: "article",
       category: "อุปกรณ์",
-      author: "ทีมแพทย์ฉุกเฉิน",
-      readTime: "6 นาที",
-      icon: Target,
+      
       content: (
         <Card>
           <CardHeader>
@@ -460,19 +445,8 @@ const Articles = () => {
                     <Badge variant="outline" className="bg-primary/5">
                       {article.category}
                     </Badge>
-                    <article.icon className="w-6 h-6 text-primary" />
                   </div>
                   <CardTitle className="text-xl mb-2">{article.title}</CardTitle>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <User className="w-4 h-4" />
-                      <span>{article.author}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{article.readTime}</span>
-                    </div>
-                  </div>
                 </CardHeader>
                 <CardContent>
                   {article.type === 'poster' && 'imageUrl' in article ? (
