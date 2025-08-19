@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, User, FileText, Heart, Zap, AlertTriangle, BookOpen, Activity, Target } from "lucide-react";
+import { Clock, User, FileText, Heart, Zap, AlertTriangle, BookOpen, Activity, Target, PlayCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -270,34 +270,86 @@ const AEDContent = () => (
 const Articles = () => {
   const articles: Article[] = [
     {
+      id: "video-bls",
+      title: "การช่วยชีวิตขั้นพื้นฐาน (BLS) - วิดีโอแนะนำ",
+      type: "article",
+      category: "วิดีโอ",
+      author: "ทีมวิชาการ",
+      readTime: "6 นาที",
+      icon: PlayCircle,
+      content: (
+        <div className="space-y-4">
+          <div className="aspect-video rounded-lg overflow-hidden bg-black">
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/3xMfI-8c164?si=HNlOKSc2HDxLcnpy"
+              title="BLS Intro"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+          <p className="text-muted-foreground">
+            วิดีโอแนะนำการช่วยชีวิตขั้นพื้นฐาน อธิบายภาพรวมและความสำคัญของ CPR อย่างกระชับ
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: "video-cpr-aed",
+      title: "การทำ CPR และการใช้ AED - วิดีโอสอน",
+      type: "article",
+      category: "วิดีโอ",
+      author: "ทีมวิชาการ",
+      readTime: "7 นาที",
+      icon: PlayCircle,
+      content: (
+        <div className="space-y-4">
+          <div className="aspect-video rounded-lg overflow-hidden bg-black">
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/hr6Ig4WUcZA?si=xnQVF00bAXQ5e1aq"
+              title="CPR & AED"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+          <p className="text-muted-foreground">
+            วิดีโอสอนขั้นตอนการทำ CPR และการใช้เครื่อง AED พร้อมคำอธิบายทีละขั้นตอน
+          </p>
+        </div>
+      ),
+    },
+    {
       id: "poster-drcab",
-      title: "การใช้เครื่องเออีดี (AED)",
+      title: "ขั้นตอน D-R-C-A-B ฉบับโปสเตอร์",
       type: "poster",
       category: "โปสเตอร์",
-      author: " ",
-      readTime: " ",
+      author: "ทีมวิชาการ",
+      readTime: "1 นาที",
       content: <></>,
       icon: FileText,
-      imageUrl: "/poster1.pdf_page-0001.jpg"
+  imageUrl: "/poster1.pdf_page-0001.jpg"
     },
     {
       id: "poster-aed",
-      title: "การช่วยฟื้นคืนชีพ",
+      title: "วิธีใช้เครื่อง AED ฉบับโปสเตอร์",
       type: "poster",
       category: "โปสเตอร์",
-      author: " ",
-      readTime: " ",
+      author: "ทีมวิชาการ",
+      readTime: "1 นาที",
       content: <></>,
       icon: FileText,
-      imageUrl: "/poster2.pdf_page-0002.jpg"
+  imageUrl: "/poster2.pdf_page-0002.jpg"
     },
     {
       id: "basics",
       title: "ความรู้พื้นฐาน CPR",
       type: "article",
       category: "ความรู้พื้นฐาน",
-      author: " ",
-      readTime: " ",
+      author: "ทีมวิชาการ",
+      readTime: "5 นาที",
       content: <BasicsContent />,
       icon: BookOpen
     },
@@ -306,8 +358,8 @@ const Articles = () => {
       title: "ขั้นตอน D-R-C-A-B",
       type: "article",
       category: "วิธีการ",
-      author: " ",
-      readTime: " ",
+      author: "ทีมแพทย์ฉุกเฉิน",
+      readTime: "7 นาที",
       content: <DRCABContent />,
       icon: Activity
     },
@@ -316,8 +368,8 @@ const Articles = () => {
       title: "การใช้เครื่อง AED",
       type: "article",
       category: "อุปกรณ์",
-      author: " ",
-      readTime: " ",
+      author: "ทีมแพทย์ฉุกเฉิน",
+      readTime: "5 นาที",
       content: <AEDContent />,
       icon: Zap
     },
@@ -326,8 +378,8 @@ const Articles = () => {
       title: "อุปกรณ์ที่จำเป็นสำหรับการทำ CPR",
       type: "article",
       category: "อุปกรณ์",
-      author: " ",
-      readTime: " ",
+      author: "ทีมแพทย์ฉุกเฉิน",
+      readTime: "6 นาที",
       icon: Target,
       content: (
         <Card>
@@ -412,6 +464,14 @@ const Articles = () => {
                   </div>
                   <CardTitle className="text-xl mb-2">{article.title}</CardTitle>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <User className="w-4 h-4" />
+                      <span>{article.author}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{article.readTime}</span>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
