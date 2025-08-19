@@ -598,7 +598,12 @@ const CourseFlow = () => {
             </DialogHeader>
             {showDoc && (
               showDoc.href.toLowerCase().includes('.pdf') ? (
-                <iframe src={encodeURI(showDoc.href)} className="w-full h-[70vh] rounded" title={showDoc.title} />
+                <object data={showDoc.href} type="application/pdf" className="w-full h-[70vh] rounded">
+                  <div className="p-4 text-sm text-muted-foreground">
+                    ไม่สามารถแสดงเอกสาร PDF ในหน้านี้ได้
+                    <a href={showDoc.href} target="_blank" rel="noopener noreferrer" className="ml-2 text-primary underline">เปิดในแท็บใหม่</a>
+                  </div>
+                </object>
               ) : (
                 <img src={encodeURI(showDoc.href)} alt={showDoc.title} className="w-full max-h-[70vh] object-contain rounded" />
               )
