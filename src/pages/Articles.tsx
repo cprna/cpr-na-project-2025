@@ -265,7 +265,7 @@ const Articles = () => {
   const articles: Article[] = [
     {
       id: "pdf-docs",
-      title: "เอกสารประกอบ CPR & AED (PDF)",
+      title: "คู่มือการช่วยฟื้นคืนชีพพื้นฐานและการใช้เครื่องเออีดี",
       type: "article",
       category: "เอกสาร",
       content: (
