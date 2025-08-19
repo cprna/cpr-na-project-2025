@@ -7,11 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { 
   ClipboardList, 
   ArrowRight, 
-  Play, 
   CheckCircle, 
-  Video, 
-  Clock, 
-  Users,
   Trophy,
   BookOpen
 } from "lucide-react";
@@ -115,13 +111,11 @@ async function fetchExamResults() {
 
 const CourseFlow = () => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<'preTest' | 'preTestResult' | 'introDocs' | 'learn' | 'postTest' | 'feedback' | 'complete' | 'showAnswers'>('preTest');
+  const [currentStep, setCurrentStep] = useState<'preTest' | 'preTestResult' | 'introDocs' | 'postTest' | 'feedback' | 'complete' | 'showAnswers'>('preTest');
   const [preTestAnswers, setPreTestAnswers] = useState<Record<number, string>>({});
   const [postTestAnswers, setPostTestAnswers] = useState<Record<number, string>>({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [completedVideos, setCompletedVideos] = useState<number[]>([]);
-  const [currentVideo, setCurrentVideo] = useState<number | null>(1);
-  const [videoEnded, setVideoEnded] = useState(false);
+  
   const [examResults, setExamResults] = useState<any[]>([]);
   const [wrongAnswers, setWrongAnswers] = useState<number[]>([]);
   const [timeLeft, setTimeLeft] = useState<number>(15 * 60);
@@ -134,10 +128,6 @@ const CourseFlow = () => {
     const m = url.match(/\/embed\/([^\?&]+)/);
     return m ? m[1] : "";
   };
-
-  useEffect(() => {
-    setVideoEnded(false); // reset เมื่อเปลี่ยนวิดีโอ
-  }, [currentVideo]);
 
   useEffect(() => {
     if (currentStep === "complete") {
@@ -370,22 +360,7 @@ const CourseFlow = () => {
     }
   ];
 
-  const videos = [
-    {
-      id: 1,
-      title: "การช่วยชีวิตขั้นพื้นฐาน(Basic Life Support)",
-      duration: "5:55",
-      description: "ทำความเข้าใจเกี่ยวกับความสำคัญของ CPR และสถานการณ์ที่ต้องใช้",
-      videoUrl: "https://www.youtube.com/embed/3xMfI-8c164?si=HNlOKSc2HDxLcnpy"
-    },
-    {
-      id: 2,
-      title: "การช่วยฟื้นคืนชีพขั้นพื้นฐาน(CPR) และการใช้เครื่องเออีดี(AED)",
-      duration: "6:25",
-      description: "วิธีการตรวจสอบความรู้สึกตัวและการหายใจของผู้ป่วย",
-      videoUrl: "https://www.youtube.com/embed/hr6Ig4WUcZA?si=xnQVF00bAXQ5e1aq"
-    }
-  ];
+  // หมายเหตุ: ขั้นเรียนจากวิดีโอหลักถูกย้ายไปหน้า "บทความ" แล้ว
 
   const handlePreTestAnswer = (value: string) => {
     setPreTestAnswers(prev => ({
@@ -439,11 +414,7 @@ const CourseFlow = () => {
     }
   };
 
-  const markVideoComplete = (videoId: number) => {
-    if (!completedVideos.includes(videoId)) {
-      setCompletedVideos([...completedVideos, videoId]);
-    }
-  };
+  // ไม่มีขั้นเรียนวิดีโอใน flow นี้แล้ว
 
   const calculateScore = (answers: Record<number, string>) => {
     let correct = 0;
@@ -457,14 +428,13 @@ const CourseFlow = () => {
 
   const preTestScore = calculateScore(preTestAnswers);
   const postTestScore = calculateScore(postTestAnswers);
-  const progressPercentage = (completedVideos.length / videos.length) * 100;
 
   const getStepNumber = () => {
     switch (currentStep) {
       case 'preTest': return 1;
       case 'introDocs': return 2;
-      case 'learn': return 3;
-      case 'postTest': return 4;
+      case 'postTest': return 3;
+      case 'feedback': return 4;
       case 'complete': return 5;
       default: return 1;
     }
@@ -474,8 +444,8 @@ const CourseFlow = () => {
     switch (currentStep) {
       case 'preTest': return 20;
       case 'introDocs': return 40;
-      case 'learn': return 60;
-      case 'postTest': return 80;
+      case 'postTest': return 60;
+      case 'feedback': return 80;
       case 'complete': return 100;
       default: return 0;
     }
@@ -529,7 +499,7 @@ const CourseFlow = () => {
     const documents = [
       {
         title: "เอกสารประกอบ CPR & AED",
-        href: "/Untitled%20design.pdf#page=1",
+        href: "/Untitled design.pdf#page=1",
         description: "สรุปขั้นตอนหลักและหลักการสำคัญ (ไฟล์ PDF)",
       }
     ];
@@ -580,8 +550,8 @@ const CourseFlow = () => {
                   ))}
                 </div>
                 <div className="flex justify-end pt-6">
-                  <Button className="bg-gradient-medical text-white" onClick={() => setCurrentStep('learn')}>
-                    ไปหน้าวิดีโอการเรียนรู้
+                  <Button className="bg-gradient-medical text-white" onClick={() => setCurrentStep('postTest')}>
+                    ทำแบบทดสอบหลังเรียน
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -598,12 +568,7 @@ const CourseFlow = () => {
             </DialogHeader>
             {showDoc && (
               showDoc.href.toLowerCase().includes('.pdf') ? (
-                <object data={showDoc.href} type="application/pdf" className="w-full h-[70vh] rounded">
-                  <div className="p-4 text-sm text-muted-foreground">
-                    ไม่สามารถแสดงเอกสาร PDF ในหน้านี้ได้
-                    <a href={showDoc.href} target="_blank" rel="noopener noreferrer" className="ml-2 text-primary underline">เปิดในแท็บใหม่</a>
-                  </div>
-                </object>
+                <iframe src={encodeURI(showDoc.href)} className="w-full h-[70vh] rounded" title={showDoc.title} />
               ) : (
                 <img src={encodeURI(showDoc.href)} alt={showDoc.title} className="w-full max-h-[70vh] object-contain rounded" />
               )
@@ -721,175 +686,7 @@ const CourseFlow = () => {
     );
   }
 
-  // Learning Section
-  if (currentStep === 'learn') {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-background to-muted">
-          <div className="container mx-auto px-4 py-6">
-            <div className="max-w-4xl mx-auto mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h1 className="text-3xl font-bold">หลักสูตร CPR & AED</h1>
-                <div className="text-sm text-muted-foreground">
-                  ขั้นตอนที่ {getStepNumber()} จาก 5
-                </div>
-              </div>
-              <Progress 
-                value={getOverallProgress()} 
-                className={`h-2 mb-2 ${getOverallProgress() === 100 ? '[&>div]:bg-success' : '[&>div]:bg-destructive'}`}
-              />
-              <div className="text-center text-sm text-muted-foreground">
-                ขั้นตอนที่ 2: เรียนรู้จากวิดีโอ
-              </div>
-            </div>
-          </div>
-          <div className="bg-gradient-hero text-white py-8">
-            <div className="container mx-auto px-4">
-              <div className="max-w-3xl mx-auto text-center">
-                <h2 className="text-3xl font-bold mb-4">
-                  เรียนรู้การช่วยฟื้นคืนชีพและการใช้ AED
-                </h2>
-                <div className="flex items-center justify-center space-x-6 text-white/80">
-                  <div className="flex items-center space-x-2">
-                    <Video className="w-5 h-5" />
-                    <span>{videos.length} วิดีโอ</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-5 h-5" />
-                    <span>รวม 10+ นาที</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Users className="w-5 h-5" />
-                    <span>สำหรับประชาชนทั่วไป</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="container mx-auto px-4 py-8">
-            <div className="max-w-4xl mx-auto mb-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Video className="w-5 h-5 text-primary" />
-                    <span>ความคืบหน้าการเรียนรู้</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>ดูวิดีโอแล้ว {completedVideos.length} จาก {videos.length} วิดีโอ</span>
-                      <span>{progressPercentage.toFixed(0)}%</span>
-                    </div>
-                    <Progress value={progressPercentage} className="h-3" />
-                  </div>
-                  {progressPercentage === 100 && (
-                    <div className="mt-4 p-4 bg-success/10 border border-success/20 rounded-lg">
-                      <p className="text-success font-semibold mb-2">🎉 ยินดีด้วย! คุณดูวิดีโอครบทุกตอนแล้ว</p>
-                      <Button 
-                        className="bg-gradient-medical text-white"
-                        onClick={() => setCurrentStep('postTest')}
-                      >
-                        ทำแบบทดสอบหลังเรียน <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                  {currentVideo ? (
-                    <Card className="shadow-lg">
-                      <CardContent className="p-6">
-                        <YouTubePlayer
-                          youtubeId={getYouTubeId(videos.find(v => v.id === currentVideo)?.videoUrl ?? "")}
-                          onEnded={() => setVideoEnded(true)}
-                        />
-                        <h3 className="text-xl font-bold mb-2">
-                          {videos.find(v => v.id === currentVideo)?.title}
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                          {videos.find(v => v.id === currentVideo)?.description}
-                        </p>
-                        <Button
-                          onClick={() => markVideoComplete(currentVideo)}
-                          disabled={completedVideos.includes(currentVideo) || !videoEnded}
-                          className="bg-gradient-medical text-white"
-                        >
-                          {completedVideos.includes(currentVideo) ? (
-                            <>
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                              ดูแล้ว
-                            </>
-                          ) : (
-                            videoEnded ? "ทำเครื่องหมายว่าดูแล้ว" : "กรุณาดูวิดีโอให้จบก่อน"
-                          )}
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Card className="shadow-lg">
-                      <CardContent className="p-12 text-center">
-                        <Video className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                        <h3 className="text-xl font-bold mb-2">เลือกวิดีโอที่ต้องการดู</h3>
-                        <p className="text-muted-foreground">
-                          เริ่มต้นการเรียนรู้โดยเลือกวิดีโอจากรายการด้านข้าง
-                        </p>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-                <div>
-                  <Card className="shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="text-lg">รายการวิดีโอ</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      <div className="space-y-2">
-                        {videos.map((video) => (
-                          <div
-                            key={video.id}
-                            className={`p-4 border-b last:border-b-0 cursor-pointer hover:bg-muted/50 transition-colors ${
-                              currentVideo === video.id ? 'bg-muted' : ''
-                            }`}
-                            onClick={() => setCurrentVideo(video.id)}
-                          >
-                            <div className="flex items-start space-x-3">
-                              <div className="flex-shrink-0 mt-1">
-                                {completedVideos.includes(video.id) ? (
-                                  <CheckCircle className="w-5 h-5 text-success" />
-                                ) : (
-                                  <Play className="w-5 h-5 text-muted-foreground" />
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-sm leading-tight mb-1">
-                                  {video.title}
-                                </h4>
-                                <p className="text-xs text-muted-foreground mb-1">
-                                  {video.description}
-                                </p>
-                                <span className="text-xs text-muted-foreground">
-                                  {video.duration}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
+  // ย้ายขั้นเรียนวิดีโอไปหน้า Articles แล้ว
 
   // Post-test Section
   if (currentStep === 'postTest') {
