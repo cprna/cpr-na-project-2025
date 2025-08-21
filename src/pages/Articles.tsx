@@ -291,29 +291,6 @@ const Articles = () => {
       ),
     },
     {
-      id: "video-bls",
-      title: "การช่วยชีวิตขั้นพื้นฐาน (BLS) - วิดีโอแนะนำ",
-      type: "article",
-      category: "วิดีโอ",
-      content: (
-        <div className="space-y-4">
-          <div className="aspect-video rounded-lg overflow-hidden bg-black">
-            <iframe
-              className="w-full h-full"
-              src="https://www.youtube.com/embed/3xMfI-8c164?si=HNlOKSc2HDxLcnpy"
-              title="BLS Intro"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            />
-          </div>
-          <p className="text-muted-foreground">
-            วิดีโอแนะนำการช่วยชีวิตขั้นพื้นฐาน อธิบายภาพรวมและความสำคัญของ CPR อย่างกระชับ
-          </p>
-        </div>
-      ),
-    },
-    {
       id: "video-cpr-aed",
       title: "การทำ CPR และการใช้ AED - วิดีโอสอน",
       type: "article",
