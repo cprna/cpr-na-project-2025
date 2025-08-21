@@ -518,12 +518,12 @@ const CourseFlow = () => {
                 className={`h-2 mb-2 ${getOverallProgress() === 100 ? '[&>div]:bg-success' : '[&>div]:bg-destructive'}`}
               />
               <div className="text-center text-sm text-muted-foreground">
-                คลิปแนะนำ + อ่านเอกสารประกอบควบคู่กับเสียงวิดีโอ
+                วิดีโอเสียงเนื้อหาการเรียนรู้ + อ่านเอกสารประกอบการเรียน
               </div>
             </div>
             <Card className="shadow-lg mb-6">
               <CardHeader>
-                <CardTitle className="text-lg">คลิปแนะนำก่อนเริ่มเรียน</CardTitle>
+                <CardTitle className="text-lg">วิดีโอเสียงเนื้อหาการเรียนรู้</CardTitle>
               </CardHeader>
               <CardContent>
                 <YouTubePlayer youtubeId={introVideoId} onEnded={() => {}} />
