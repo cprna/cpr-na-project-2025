@@ -494,7 +494,7 @@ const CourseFlow = () => {
   }
   // Intro video + documents Section
   if (currentStep === 'introDocs') {
-    const introVideoUrl = "https://www.youtube.com/embed/3xMfI-8c164?si=HNlOKSc2HDxLcnpy";
+    const introVideoUrl = "https://www.youtube.com/embed/A4_lreXs85A?si=B4YPj2V6M9u7Y4ou";
     const introVideoId = getYouTubeId(introVideoUrl);
     const documents = [
       {
