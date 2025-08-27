@@ -154,7 +154,7 @@ const Index = () => {
 
 
         {/* Statistics Section */}
-        <section className="py-16 bg-white">
+        {/* <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4">ทำไมต้องเรียนรู้ CPR?</h2>
@@ -177,7 +177,7 @@ const Index = () => {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Objectives Section */}
         <section className="py-16 bg-gradient-to-r from-medical/5 to-emergency/5">
