@@ -920,7 +920,7 @@ const CourseFlow = () => {
               <div className={`p-6 ${postTestScore >= 9 ? 'bg-success/10 border-success/20' : 'bg-destructive/10 border-destructive/20'} border rounded-lg`}>
                 {postTestScore >= 9 ? (
                   <h3 className="text-xl font-semibold text-success mb-2">
-                     ยินดีด้วยค่ะ คุณผ่านหลักสูตรแล้ว
+                    ยินดีด้วยค่ะ คุณผ่านหลักสูตรแล้ว
                   </h3>
                 ) : (
                   <h3 className="text-xl font-semibold text-destructive mb-2">
