@@ -300,7 +300,7 @@ const Articles = () => {
           <div className="aspect-video rounded-lg overflow-hidden bg-black">
             <iframe
               className="w-full h-full"
-              src="https://www.youtube.com/embed/hr6Ig4WUcZA?si=xnQVF00bAXQ5e1aq"
+              src="https://www.youtube.com/embed/PZyUSFmUQhM?si=1Z8P8IA3rbjV8tIX"
               title="CPR & AED"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
