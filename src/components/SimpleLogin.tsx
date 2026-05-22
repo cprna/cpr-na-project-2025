@@ -50,8 +50,8 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
     student_year: "",
     student_degree: "",
     university: "",
-  cpr_experience: [] as string[],
-  real_cpr_experience_1y: ""
+    cpr_experience: [] as string[],
+    real_cpr_experience_1y: ""
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -78,7 +78,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
     ) {
       toast({
         title: "กรุณากรอกข้อมูลให้ครบถ้วน",
-        description: "โปรดใส่ชื่อ อายุ เพศ อาชีพ เลือกประสบการณ์ CPR ในรอบ 6 เดือน และระบุว่ามีประสบการณ์จริงในรอบ 1 ปีหรือไม่",
+        description: "โปรดใส่ชื่อ อายุ เพศ อาชีพ เลือกประสบการณ์ CPR ในรอบ 6 เดือน และระบุประสบการณ์จริง",
         variant: "destructive"
       });
       return;
@@ -88,38 +88,50 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
 
     try {
       const user_id = crypto.randomUUID();
+      const profileData = {
+        user_id,
+        full_name: formData.full_name,
+        age: parseInt(formData.age),
+        gender: formData.gender,
+        occupation: formData.occupation === "อื่นๆ" ? formData.other_occupation : formData.occupation,
+        student_year: formData.occupation === "นักศึกษา" ? formData.student_year : null,
+        student_degree: formData.occupation === "นักศึกษา" ? formData.student_degree : null,
+        university: formData.occupation === "นักศึกษา" ? formData.university : null,
+        cpr_experience: formData.cpr_experience,
+        real_cpr_experience_1y: formData.real_cpr_experience_1y === "เคย"
+      };
+
       const { data, error } = await supabase
         .from("profiles")
-        .upsert([{
-          user_id,
-          full_name: formData.full_name,
-          age: parseInt(formData.age),
-          gender: formData.gender,
-          occupation: formData.occupation === "อื่นๆ" ? formData.other_occupation : formData.occupation,
-          student_year: formData.occupation === "นักศึกษา" ? formData.student_year : null,
-          student_degree: formData.occupation === "นักศึกษา" ? formData.student_degree : null,
-          university: formData.occupation === "นักศึกษา" ? formData.university : null,
-          cpr_experience: formData.cpr_experience,
-          real_cpr_experience_1y: formData.real_cpr_experience_1y === "เคย"
-        }])
+        .insert([profileData])
         .select("id, user_id, full_name, age, gender, occupation, cpr_experience, student_year, student_degree, university, real_cpr_experience_1y, created_at, last_login, updated_at")
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
 
-  localStorage.setItem("profile_user", JSON.stringify(data));
+      localStorage.setItem("profile_user", JSON.stringify(data));
 
       toast({
         title: "เข้าสู่ระบบสำเร็จ",
         description: `ยินดีต้อนรับ ${formData.full_name}`
       });
 
-  onLogin(data as unknown as ProfileUser);
+      onLogin(data as unknown as ProfileUser);
       onClose();
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Error details:", error);
+      let errorMessage = "ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง";
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "เกิดข้อผิดพลาด",
-        description: "ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
