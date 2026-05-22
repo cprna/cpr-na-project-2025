@@ -88,6 +88,18 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
 
     try {
       const user_id = crypto.randomUUID();
+
+      // Step 1: Create user in simple_user table
+      const { error: userError } = await supabase
+        .from("simple_user")
+        .insert([{ id: user_id }]);
+
+      if (userError) {
+        console.error("User creation error:", userError);
+        throw new Error("ไม่สามารถสร้างบัญชีผู้ใช้ได้");
+      }
+
+      // Step 2: Create profile in profiles table
       const profileData = {
         user_id,
         full_name: formData.full_name,
@@ -108,7 +120,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
         .single();
 
       if (error) {
-        console.error("Supabase error:", error);
+        console.error("Profile creation error:", error);
         throw error;
       }
 
@@ -127,6 +139,8 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
       
       if (error?.message) {
         errorMessage = error.message;
+      } else if (error?.details) {
+        errorMessage = error.details;
       }
       
       toast({
