@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 type FeedbackFormProps = {
   onComplete: () => void;
@@ -32,6 +33,7 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
   });
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   // เรียงจาก 5 → 1 ให้ค่ามากอยู่ฝั่งซ้าย
   const likertOptions = [
@@ -46,42 +48,37 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
     // Validate all five questions answered
     const allAnswered = Object.values(answers).every((v) => v !== "");
     if (!allAnswered) {
-      alert("กรุณาตอบทุกข้อในแบบประเมินความพึงพอใจ");
+      toast({
+        title: "กรุณาตอบทุกข้อ",
+        description: "กรุณาตอบทุกข้อในแบบประเมินความพึงพอใจ",
+        variant: "destructive"
+      });
       return;
     }
 
     setIsSubmitting(true);
     
     const profileUser = JSON.parse(localStorage.getItem("profile_user") || "null");
-    if (!profileUser?.id && !profileUser?.user_id) {
-      alert("ไม่พบข้อมูลผู้ใช้");
+    if (!profileUser?.user_id) {
+      toast({
+        title: "ข้อผิดพลาด",
+        description: "ไม่พบข้อมูลผู้ใช้",
+        variant: "destructive"
+      });
       setIsSubmitting(false);
       return;
     }
 
-  const userId = profileUser.user_id || profileUser.id;
+    const userId = profileUser.user_id;
     
     try {
-      // Verify if the user exists in the profiles table and get their profile id
-      const { data: userProfile, error: userCheckError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('user_id', userId)
-        .single();
-
-      if (userCheckError || !userProfile) {
-        alert("ไม่พบข้อมูลผู้ใช้ในระบบ กรุณาลงทะเบียนก่อนทำแบบประเมิน");
-        setIsSubmitting(false);
-        return;
-      }
-
       // Map to DB columns
       // - satisfaction: คะแนนโดยรวม (q5) ยังเก็บไว้เพื่อความเข้ากันได้เดิม
       // - usability: คะแนนความสะดวกในการใช้งาน (q2) ยังเก็บไว้เดิม
       // - q1..q5: เก็บคะแนนทั้ง 5 ข้อเป็นตัวเลข
       // - answers (jsonb): เก็บวัตถุคำตอบทั้งหมด + หมายเหตุ
       const payload = {
-        user_id: userProfile.id,
+        user_id: userId,
         satisfaction: answers.q5, // string "1"-"5" (เดิม)
         usability: answers.q2,    // string "1"-"5" (เดิม)
         q1: Number(answers.q1),
@@ -96,12 +93,32 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
 
       const { error } = await supabase.from("feedbacks").insert([payload]);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+
+      toast({
+        title: "ส่งแบบสอบถามสำเร็จ",
+        description: "ขอบคุณสำหรับความคิดเห็นของคุณ"
+      });
 
       onComplete();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting feedback:", error);
-  alert("เกิดข้อผิดพลาดในการบันทึกแบบสอบถาม กรุณาลองใหม่อีกครั้ง");
+      let errorMessage = "เกิดข้อผิดพลาดในการบันทึกแบบสอบถาม กรุณาลองใหม่อีกครั้ง";
+      
+      if (error?.message?.includes("row-level security")) {
+        errorMessage = "ไม่มีสิทธิ์ในการบันทึกข้อมูล กรุณาติดต่อผู้ดูแลระบบ";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: errorMessage,
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -135,7 +152,7 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
                     <RadioGroupItem id={`${q.key}-${opt.value}`} value={opt.value} className="sr-only peer" />
                     <Label
                       htmlFor={`${q.key}-${opt.value}`}
-                      className="block cursor-pointer select-none rounded-md border bg-background p-2 text-center text-xs sm:text-sm transition-colors hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                      className="block cursor-pointer select-none rounded-md border bg-background p-2 text-center text-xs sm:text-sm transition-colors hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10"
                       aria-label={opt.label}
                       title={opt.label}
                     >
