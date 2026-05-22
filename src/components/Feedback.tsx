@@ -59,7 +59,7 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
     setIsSubmitting(true);
     
     const profileUser = JSON.parse(localStorage.getItem("profile_user") || "null");
-    if (!profileUser?.user_id) {
+    if (!profileUser?.id) {
       toast({
         title: "ข้อผิดพลาด",
         description: "ไม่พบข้อมูลผู้ใช้",
@@ -69,7 +69,7 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
       return;
     }
 
-    const userId = profileUser.user_id;
+    const profileId = profileUser.id;
     
     try {
       // Map to DB columns
@@ -78,7 +78,7 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
       // - q1..q5: เก็บคะแนนทั้ง 5 ข้อเป็นตัวเลข
       // - answers (jsonb): เก็บวัตถุคำตอบทั้งหมด + หมายเหตุ
       const payload = {
-        user_id: userId,
+        user_id: profileId,
         satisfaction: answers.q5, // string "1"-"5" (เดิม)
         usability: answers.q2,    // string "1"-"5" (เดิม)
         q1: Number(answers.q1),
@@ -108,7 +108,9 @@ const FeedbackForm = ({ onComplete }: FeedbackFormProps) => {
       console.error("Error submitting feedback:", error);
       let errorMessage = "เกิดข้อผิดพลาดในการบันทึกแบบสอบถาม กรุณาลองใหม่อีกครั้ง";
       
-      if (error?.message?.includes("row-level security")) {
+      if (error?.message?.includes("foreign key")) {
+        errorMessage = "ข้อมูลผู้ใช้ไม่ตรงกับระบบ กรุณาเข้าสู่ระบบใหม่";
+      } else if (error?.message?.includes("row-level security")) {
         errorMessage = "ไม่มีสิทธิ์ในการบันทึกข้อมูล กรุณาติดต่อผู้ดูแลระบบ";
       } else if (error?.message) {
         errorMessage = error.message;
