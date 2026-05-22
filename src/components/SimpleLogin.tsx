@@ -90,7 +90,7 @@ const SimpleLogin = ({ onLogin, onClose }: SimpleLoginProps) => {
       const user_id = crypto.randomUUID();
       const { data, error } = await supabase
         .from("profiles")
-        .insert([{
+        .upsert([{
           user_id,
           full_name: formData.full_name,
           age: parseInt(formData.age),
